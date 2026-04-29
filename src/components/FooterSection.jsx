@@ -1,3 +1,6 @@
+import smashMargaritaLogo from "../../assets/images/Smash_MargaritaLogo.jpg";
+import boisLogotipo from "../../assets/images/BoisLogotipo.png";
+
 function FooterSection() {
   return (
     <footer className="footer bois-footer">
@@ -16,7 +19,7 @@ function FooterSection() {
           <div className="footer-telegram-cta">
             <figure className="image footer-telegram-icon">
               <img
-                src="https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=900&q=80"
+                src={smashMargaritaLogo}
                 alt="Icono de la comunidad Smash Margarita+"
                 loading="lazy"
               />
@@ -36,7 +39,7 @@ function FooterSection() {
           <div className="footer-brand">
             <figure className="image footer-brand-logo">
               <img
-                src="https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1400&q=80"
+                src={boisLogotipo}
                 alt="Logo BoisGang"
                 loading="lazy"
               />

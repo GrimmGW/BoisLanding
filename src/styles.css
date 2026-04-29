@@ -4,6 +4,16 @@
   color-scheme: dark;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
 html,
 body,
 #root {
@@ -21,6 +31,370 @@ body,
       center/cover no-repeat;
 }
 
+.bois-hero-has-nav .hero-body {
+  padding-top: 8.25rem;
+}
+
+@media (max-width: 768px) {
+  .bois-hero-has-nav .hero-body {
+    padding-top: 7.75rem;
+  }
+}
+
+/* —— Hero navbar (absolute, not sticky) —— */
+.bois-nav {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 30;
+  padding: 1rem 0 0.5rem;
+  background: transparent;
+  pointer-events: none;
+}
+
+@media (max-width: 768px) {
+  .bois-nav {
+    padding-top: 1rem;
+    padding-bottom: 0.5rem;
+    padding-left: max(1.35rem, env(safe-area-inset-left, 0px));
+    padding-right: max(1.35rem, env(safe-area-inset-right, 0px));
+  }
+}
+
+.bois-nav-inner {
+  pointer-events: auto;
+}
+
+.bois-nav-desktop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 3rem;
+}
+
+.bois-nav-mobile-bar {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  position: relative;
+  min-height: 3rem;
+}
+
+.bois-nav-burger {
+  flex: 0 0 2.75rem;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: none;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #f3e8ff;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.35rem;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.bois-nav-burger:hover,
+.bois-nav-burger:focus-visible {
+  background: rgba(166, 88, 255, 0.25);
+  color: #fff;
+  outline: none;
+}
+
+.bois-nav-mobile-spacer {
+  flex: 0 0 2.75rem;
+  width: 2.75rem;
+}
+
+.bois-nav-logo-wrap {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.bois-nav-logo-wrap:focus-visible {
+  outline: 2px solid rgba(166, 88, 255, 0.85);
+  outline-offset: 4px;
+  border-radius: 8px;
+}
+
+.bois-nav-logo {
+  display: block;
+  height: 44px;
+  width: auto;
+  max-width: 160px;
+  object-fit: contain;
+}
+
+.bois-nav-mobile-bar .bois-nav-logo-wrap.bois-nav-logo-center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: auto;
+}
+
+.bois-nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.bois-nav-brand .bois-nav-logo {
+  height: 48px;
+  max-width: 180px;
+}
+
+.bois-nav-divider {
+  width: 1px;
+  height: 28px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.bois-nav-links {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.35rem 1.25rem;
+}
+
+.bois-nav-link {
+  color: rgba(245, 247, 252, 0.92);
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+  padding: 0.35rem 0.15rem;
+  border-radius: 6px;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.bois-nav-link:hover,
+.bois-nav-link:focus-visible {
+  color: #fff;
+  background: rgba(166, 88, 255, 0.15);
+  outline: none;
+}
+
+/* Pill “Contacto” con borde degradado morado */
+.bois-nav-contact {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.45rem 1.35rem;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.92rem;
+  text-decoration: none;
+  color: #e8d4ff !important;
+  border: 2px solid transparent;
+  background:
+    linear-gradient(rgba(8, 4, 18, 0.65), rgba(8, 4, 18, 0.65)) padding-box,
+    linear-gradient(125deg, #7c3aed 0%, #a658ff 45%, #e066ff 78%, #9333ea 100%) border-box;
+  transition: filter 0.15s ease, box-shadow 0.15s ease;
+}
+
+.bois-nav-contact:hover,
+.bois-nav-contact:focus-visible {
+  filter: brightness(1.08);
+  box-shadow: 0 0 20px rgba(166, 88, 255, 0.35);
+  outline: none;
+}
+
+.bois-nav-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  animation: boisBackdropIn 0.2s ease forwards;
+}
+
+@keyframes boisBackdropIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes boisBackdropOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.bois-nav-backdrop--closing {
+  animation: boisBackdropOut 0.26s ease forwards;
+}
+
+.bois-nav-drawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: auto;
+  z-index: 101;
+  width: min(88vw, 320px);
+  height: 100%;
+  max-height: 100dvh;
+  background: linear-gradient(180deg, #12081f 0%, #0a0612 100%);
+  border-right: 1px solid rgba(166, 88, 255, 0.25);
+  border-left: none;
+  box-shadow: 12px 0 40px rgba(0, 0, 0, 0.55);
+  padding: 1.25rem 1.25rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  animation: boisDrawerIn 0.28s ease forwards;
+}
+
+.bois-nav-drawer--closing {
+  animation: boisDrawerOut 0.28s ease forwards;
+}
+
+@keyframes boisDrawerIn {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes boisDrawerOut {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+.bois-nav-drawer-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.bois-nav-drawer-title {
+  font-weight: 700;
+  font-size: 1rem;
+  color: #fff;
+  margin: 0;
+}
+
+.bois-nav-drawer-close {
+  flex-shrink: 0;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: none;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #f3e8ff;
+  cursor: pointer;
+  font-size: 1.2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bois-nav-drawer-close:hover,
+.bois-nav-drawer-close:focus-visible {
+  background: rgba(166, 88, 255, 0.3);
+  outline: none;
+}
+
+.bois-nav-drawer-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.bois-nav-drawer-list a {
+  display: block;
+  padding: 0.85rem 1rem;
+  border-radius: 10px;
+  color: rgba(245, 247, 252, 0.95);
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.15s ease;
+}
+
+.bois-nav-drawer-list a:hover,
+.bois-nav-drawer-list a:focus-visible {
+  background: rgba(166, 88, 255, 0.18);
+  outline: none;
+}
+
+.bois-nav-drawer-list .bois-nav-contact {
+  margin-top: 0.25rem;
+  display: flex;
+  align-self: stretch;
+  width: 100%;
+  max-width: none;
+  box-sizing: border-box;
+  justify-content: center;
+  align-items: center;
+  padding: 0.85rem 1rem;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.bois-nav-drawer-list .bois-nav-contact:hover,
+.bois-nav-drawer-list .bois-nav-contact:focus-visible {
+  background:
+    linear-gradient(rgba(12, 6, 22, 0.92), rgba(12, 6, 22, 0.92)) padding-box,
+    linear-gradient(125deg, #8b5cf6 0%, #b366ff 45%, #f472b6 78%, #9333ea 100%) border-box;
+  filter: brightness(1.08);
+  box-shadow: 0 0 20px rgba(166, 88, 255, 0.35);
+}
+
+@media (max-width: 768px) {
+  .bois-nav-desktop {
+    display: none;
+  }
+
+  .bois-nav-mobile-bar {
+    display: flex;
+  }
+}
+
+@media (min-width: 769px) {
+  .bois-nav-mobile-bar {
+    display: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bois-nav-backdrop,
+  .bois-nav-drawer {
+    animation: none;
+  }
+
+  .bois-nav-drawer {
+    transform: none;
+  }
+
+  .bois-nav-backdrop--closing,
+  .bois-nav-drawer--closing {
+    animation: none;
+    opacity: 0;
+  }
+
+  .bois-nav-drawer--closing {
+    transform: translateX(-100%);
+  }
+}
+
 .bois-kicker {
   display: inline-block;
   margin-bottom: 1rem;
@@ -33,6 +407,8 @@ body,
 }
 
 .bois-title {
+  font-family: "Unbounded", "Outfit", sans-serif;
+  font-weight: 700;
   color: #ffffff;
   line-height: 0.95;
   letter-spacing: 0.02em;
@@ -45,9 +421,40 @@ body,
 }
 
 .bois-slogan {
-  color: #b365ff;
-  font-weight: 700;
-  font-size: 1.25rem;
+  font-family: "Yellowtail", cursive;
+  color: #d8b4ff;
+  font-weight: 400;
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  line-height: 1.3;
+  min-height: 2.75rem;
+}
+
+.bois-typewriter-cursor {
+  display: inline-block;
+  margin-left: 2px;
+  width: 2px;
+  height: 1.1em;
+  vertical-align: -0.12em;
+  background: #cf9dff;
+  animation: boisCursorBlink 0.9s step-end infinite;
+}
+
+@keyframes boisCursorBlink {
+  0%,
+  50% {
+    opacity: 1;
+  }
+  51%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bois-typewriter-cursor {
+    animation: none;
+    opacity: 0.7;
+  }
 }
 
 .bois-placeholder-frame {
@@ -95,7 +502,6 @@ body,
 
 @media (max-width: 768px) {
   .bois-hero .hero-body {
-    padding-top: 3rem;
     padding-bottom: 3rem;
   }
 
@@ -532,6 +938,8 @@ body,
 }
 
 .bois-footer {
+  /* Cambia solo este valor para agrandar o achicar el logo Bois (p. ej. 160px o 240px). */
+  --footer-brand-logo-max: 200px;
   background: #09090d;
   padding-top: 2rem;
   padding-bottom: 2rem;
@@ -540,7 +948,9 @@ body,
 .footer-telegram-card {
   background: linear-gradient(120deg, #0a4f45 0%, #0a6a50 45%, #b97a16 100%);
   border-radius: 22px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: none;
+  outline: none;
+  box-shadow: none;
   padding: 2rem;
   display: flex;
   justify-content: space-between;
@@ -599,17 +1009,22 @@ body,
   display: grid;
   grid-template-columns: 1.2fr 1fr;
   gap: 1.4rem;
-  align-items: center;
+  align-items: start;
 }
 
 .footer-brand-logo {
-  max-width: 480px;
+  max-width: var(--footer-brand-logo-max, 200px);
+  margin: 0;
 }
 
 .footer-brand-logo img {
   width: 100%;
-  border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  height: auto;
+  display: block;
+  border: none;
+  outline: none;
+  box-shadow: none;
+  border-radius: 0;
 }
 
 .footer-links-placeholder {
