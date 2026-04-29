@@ -8,7 +8,7 @@ function FooterSection() {
         </p>
         <p>
           <a href="#torneos">Torneos</a> | <a href="#nosotros">Quiénes somos</a> |{" "}
-          <a href="#galeria">Galería</a>
+          <a href="#contacto">Contáctanos</a>
         </p>
       </div>
     </footer>
