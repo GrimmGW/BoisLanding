@@ -56,7 +56,7 @@ function AboutSection() {
             <h2 className="title is-2 about-title">Quiénes somos</h2>
             <div className="content is-medium about-copy">
               <p>
-                Somos una comunidad dedicada a crear experiencias competitivas y
+                Somos un equipo de e-sports dedicado a crear experiencias competitivas y
                 sociales alrededor de los platform-fighters.
               </p>
               <p>
