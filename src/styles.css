@@ -709,6 +709,14 @@ body,
   flex-wrap: wrap;
 }
 
+#torneos .title {
+  color: #f7f7fc;
+}
+
+.tournaments-subtitle {
+  color: #cfcfe0 !important;
+}
+
 .tournament-all-button {
   background: #5d28a7;
   border-color: #8a4de1;

@@ -257,7 +257,7 @@ function TournamentsSection() {
         <div className="section-header-inline">
           <div>
             <h2 className="title is-2">Próximos torneos</h2>
-            <p className="subtitle is-5 has-text-grey">
+            <p className="subtitle is-5 tournaments-subtitle">
               Eventos competitivos creados por BoisGang en start.gg.
             </p>
           </div>
