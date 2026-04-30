@@ -1,4 +1,20 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
+
+const COMPACT_MQ = "(max-width: 768px)";
+
+function subscribeCompact(callback) {
+  const mq = window.matchMedia(COMPACT_MQ);
+  mq.addEventListener("change", callback);
+  return () => mq.removeEventListener("change", callback);
+}
+
+function getCompactSnapshot() {
+  return window.matchMedia(COMPACT_MQ).matches;
+}
+
+function getCompactServerSnapshot() {
+  return false;
+}
 
 function formatDate(dateISO) {
   if (!dateISO) return "Fecha por confirmar";
@@ -33,6 +49,14 @@ function TournamentsSection() {
   const [allPage, setAllPage] = useState(1);
   const [allHasNextPage, setAllHasNextPage] = useState(false);
   const [allTotalPages, setAllTotalPages] = useState(1);
+
+  const isCompact = useSyncExternalStore(
+    subscribeCompact,
+    getCompactSnapshot,
+    getCompactServerSnapshot
+  );
+
+  const effectiveViewMode = isCompact ? "grid" : viewMode;
 
   useEffect(() => {
     let mounted = true;
@@ -154,7 +178,7 @@ function TournamentsSection() {
       return <p className="has-text-grey">No hay torneos próximos disponibles.</p>;
     }
 
-    if (viewMode === "list") {
+    if (effectiveViewMode === "list") {
       return (
         <div className="tournaments-list">
           {tournaments.map((tournament) => (
@@ -225,7 +249,7 @@ function TournamentsSection() {
         ))}
       </div>
     );
-  }, [error, loading, tournaments, viewMode]);
+  }, [error, loading, tournaments, effectiveViewMode]);
 
   return (
     <section id="torneos" className="section">
@@ -246,26 +270,28 @@ function TournamentsSection() {
               setIsModalClosing(false);
             }}
           >
-            Ver todos mis torneos
+            Ver todos los torneos
           </button>
         </div>
-        <div className="buttons has-addons tournament-view-switch mt-4 mb-5">
-          <button
-            type="button"
-            className={`button is-small ${viewMode === "list" ? "is-link is-selected-view" : ""}`}
-            onClick={() => setViewMode("list")}
-          >
-            Lista
-          </button>
-          <button
-            type="button"
-            className={`button is-small ${viewMode === "grid" ? "is-link is-selected-view" : ""}`}
-            onClick={() => setViewMode("grid")}
-          >
-            Cuadrícula
-          </button>
-        </div>
-        {content}
+        {!isCompact ? (
+          <div className="buttons has-addons tournament-view-switch mt-4 mb-5">
+            <button
+              type="button"
+              className={`button is-small ${viewMode === "list" ? "is-link is-selected-view" : ""}`}
+              onClick={() => setViewMode("list")}
+            >
+              Lista
+            </button>
+            <button
+              type="button"
+              className={`button is-small ${viewMode === "grid" ? "is-link is-selected-view" : ""}`}
+              onClick={() => setViewMode("grid")}
+            >
+              Cuadrícula
+            </button>
+          </div>
+        ) : null}
+        {isCompact ? <div className="mt-4">{content}</div> : content}
         <div className="pagination-controls mt-5">
           <button
             type="button"
