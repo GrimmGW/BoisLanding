@@ -22,7 +22,7 @@ function HeroSection() {
                 </a>
 
                 <div className="bois-hero-icon-buttons" aria-label="Redes sociales">
-                  <a className="bois-hero-icon-button" href="#" aria-label="Facebook">
+                  <a className="bois-hero-icon-button" href="https://www.facebook.com/boisgang" aria-label="Facebook">
                     <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden focusable="false">
                       <path
                         fill="currentColor"
@@ -30,7 +30,7 @@ function HeroSection() {
                       />
                     </svg>
                   </a>
-                  <a className="bois-hero-icon-button" href="#" aria-label="Instagram">
+                  <a className="bois-hero-icon-button" href="https://instagram.com/_boisgang" aria-label="Instagram">
                     <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden focusable="false">
                       <path
                         fill="currentColor"
@@ -38,7 +38,7 @@ function HeroSection() {
                       />
                     </svg>
                   </a>
-                  <a className="bois-hero-icon-button" href="#" aria-label="YouTube">
+                  <a className="bois-hero-icon-button" href="https://www.youtube.com/@boisgang" aria-label="YouTube">
                     <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden focusable="false">
                       <path
                         fill="currentColor"
