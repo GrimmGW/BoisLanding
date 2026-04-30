@@ -30,7 +30,20 @@ function FooterSection() {
               target="_blank"
               rel="noreferrer"
             >
-              Entrar a Telegram
+              Ir a Telegram
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                width="18"
+                height="18"
+                aria-hidden
+                focusable="false"
+              >
+                <path
+                  fill="currentColor"
+                  d="M9.04 15.47 8.66 20.8c.54 0 .78-.23 1.06-.51l2.53-2.42 5.25 3.84c.96.53 1.64.25 1.9-.89l3.44-16.11h.01c.3-1.4-.5-1.95-1.43-1.6L1.19 10.58c-1.38.54-1.36 1.31-.23 1.66l5.17 1.61L18.13 6.3c.56-.37 1.07-.16.65.21"
+                />
+              </svg>
             </a>
           </div>
         </div>

@@ -640,6 +640,12 @@ body,
 
 .tournament-card .card-content {
   flex: 1;
+  color: #d8d8e2;
+}
+
+.tournament-card .card-content .title,
+.tournament-card .card-content strong {
+  color: #ffffff;
 }
 
 .tournament-grid-image {
@@ -824,6 +830,18 @@ body,
 }
 
 @media (max-width: 768px) {
+  .about-title,
+  .about-copy {
+    text-align: center;
+  }
+
+  .about-ig-button {
+    display: flex;
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
   .about-metrics {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -938,6 +956,7 @@ body,
   align-items: center;
   gap: 0.75rem;
   color: #ededf5;
+  text-decoration: none;
 }
 
 .contact-icon {
@@ -950,6 +969,19 @@ body,
   background: rgba(37, 211, 102, 0.16);
   color: #25d366;
   border: 1px solid rgba(37, 211, 102, 0.4);
+}
+
+.contact-divider {
+  margin: 0.9rem 0 0.85rem;
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  max-width: 280px;
+}
+
+.contact-email-icon {
+  background: rgba(231, 76, 60, 0.18);
+  color: #ff6b5f;
+  border: 1px solid rgba(231, 76, 60, 0.42);
 }
 
 .contact-form-card {
@@ -1053,6 +1085,9 @@ body,
   border-color: #ffffff;
   color: #0f3d37;
   font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
 }
 
 .footer-bottom-grid {
@@ -1110,7 +1145,14 @@ body,
 
   .footer-telegram-cta {
     width: 100%;
-    align-items: flex-start;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .footer-telegram-icon,
+  .footer-telegram-button {
+    margin-left: auto;
+    margin-right: auto;
   }
 
   .footer-bottom-grid {
