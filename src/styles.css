@@ -402,7 +402,8 @@ body,
   border: none;
   color: #ffffff;
   font-weight: 600;
-  letter-spacing: 0.06em;
+  font-size: clamp(0.72rem, 1.8vw, 0.9rem);
+  letter-spacing: clamp(0.02em, 0.3vw, 0.06em);
   text-transform: uppercase;
 }
 
@@ -414,14 +415,19 @@ body,
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  line-height: 0.95;
-  letter-spacing: 0.02em;
+  font-size: clamp(2.1rem, 7.4vw, 5rem);
+  line-height: 1.04;
+  letter-spacing: clamp(0.004em, 0.15vw, 0.018em);
   text-transform: uppercase;
   animation: boisTitleGradientFlow 5s linear infinite;
+  word-break: keep-all;
+  overflow-wrap: normal;
 }
 
 .bois-copy {
-  max-width: 42ch;
+  max-width: 46ch;
+  font-size: clamp(0.98rem, 2.2vw, 1.24rem);
+  line-height: 1.52;
   color: #ddddea;
 }
 
@@ -549,7 +555,14 @@ body,
   }
 
   .bois-title {
-    font-size: clamp(2.2rem, 12vw, 3.6rem);
+    font-size: clamp(1.9rem, 10.5vw, 3.2rem);
+    line-height: 1.08;
+    letter-spacing: 0.006em;
+  }
+
+  .bois-copy {
+    font-size: clamp(0.94rem, 4.4vw, 1.12rem);
+    line-height: 1.45;
   }
 
   .bois-hero-actions {
@@ -563,6 +576,17 @@ body,
   .bois-hero-icon-button {
     width: 2.25rem;
     height: 2.25rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .bois-title {
+    font-size: clamp(1.75rem, 9.2vw, 2.55rem);
+  }
+
+  .bois-kicker {
+    font-size: 0.7rem;
+    letter-spacing: 0.02em;
   }
 }
 
