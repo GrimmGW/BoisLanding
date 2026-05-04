@@ -239,16 +239,16 @@ body,
 .bois-nav-drawer {
   position: fixed;
   top: 0;
-  left: 0;
-  right: auto;
+  right: 0;
+  left: auto;
   z-index: 101;
   width: min(88vw, 320px);
   height: 100%;
   max-height: 100dvh;
   background: linear-gradient(180deg, #12081f 0%, #0a0612 100%);
-  border-right: 1px solid rgba(166, 88, 255, 0.25);
-  border-left: none;
-  box-shadow: 12px 0 40px rgba(0, 0, 0, 0.55);
+  border-left: 1px solid rgba(166, 88, 255, 0.25);
+  border-right: none;
+  box-shadow: -12px 0 40px rgba(0, 0, 0, 0.55);
   padding: 1.25rem 1.25rem 2rem;
   display: flex;
   flex-direction: column;
@@ -262,7 +262,7 @@ body,
 
 @keyframes boisDrawerIn {
   from {
-    transform: translateX(-100%);
+    transform: translateX(100%);
   }
   to {
     transform: translateX(0);
@@ -274,7 +274,7 @@ body,
     transform: translateX(0);
   }
   to {
-    transform: translateX(-100%);
+    transform: translateX(100%);
   }
 }
 
@@ -391,7 +391,7 @@ body,
   }
 
   .bois-nav-drawer--closing {
-    transform: translateX(-100%);
+    transform: translateX(100%);
   }
 }
 
@@ -739,16 +739,79 @@ body,
   object-position: center;
 }
 
-.tournament-view-switch .button {
-  background: #17171c;
-  border-color: rgba(179, 101, 255, 0.3);
-  color: #e9e9ef;
+/* Material 3–style view switch (desktop only; JS hides on mobile) */
+.tournament-view-m3 {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.85rem;
+  flex-wrap: wrap;
 }
 
-.tournament-view-switch .button.is-selected-view {
-  background: #5d28a7;
-  border-color: #8a4de1;
-  color: #fff;
+.tournament-m3-label {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: rgba(200, 200, 215, 0.55);
+  letter-spacing: 0.02em;
+  user-select: none;
+  transition: color 0.15s ease;
+}
+
+.tournament-m3-label.is-active {
+  color: #f2f2f8;
+}
+
+.tournament-m3-switch {
+  flex-shrink: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tournament-m3-switch:focus-visible {
+  outline: 2px solid rgba(179, 101, 255, 0.85);
+  outline-offset: 4px;
+  border-radius: 999px;
+}
+
+.tournament-m3-track {
+  display: block;
+  position: relative;
+  width: 3.25rem;
+  height: 2rem;
+  padding: 0.2rem;
+  border-radius: 999px;
+  background: #23232c;
+  border: 1px solid rgba(179, 101, 255, 0.35);
+  box-sizing: border-box;
+}
+
+.tournament-m3-thumb {
+  display: block;
+  width: 1.35rem;
+  height: 1.35rem;
+  border-radius: 50%;
+  background: #fafafa;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+  transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+    background 0.15s ease;
+  transform: translateX(0);
+}
+
+.tournament-m3-switch[aria-checked="true"] .tournament-m3-thumb {
+  transform: translateX(calc(3.25rem - 0.4rem - 1.35rem));
+  background: linear-gradient(145deg, #c4b5fd 0%, #a78bfa 40%, #8b5cf6 100%);
+  box-shadow: 0 1px 6px rgba(139, 92, 246, 0.45);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tournament-m3-thumb {
+    transition: none;
+  }
 }
 
 .tournaments-list {
@@ -870,7 +933,26 @@ body,
 }
 
 .modal-tournament-item {
+  position: relative;
+  overflow: visible;
   border-color: rgba(179, 101, 255, 0.25);
+}
+
+.tournament-new-badge {
+  position: absolute;
+  top: 0.65rem;
+  left: 0.65rem;
+  z-index: 2;
+  padding: 0.22rem 0.55rem;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #fff;
+  background: linear-gradient(180deg, #ef4444 0%, #b91c1c 100%);
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  pointer-events: none;
 }
 
 .tournaments-modal-footer {
@@ -998,8 +1080,15 @@ body,
     align-items: flex-start;
   }
 
+  .section-header-inline > div {
+    width: 100%;
+  }
+
   .section-header-inline .tournament-all-button {
     align-self: center;
+    display: inline-flex;
+    margin-left: auto;
+    margin-right: auto;
     margin-top: 0.35rem;
   }
 
@@ -1008,6 +1097,10 @@ body,
     justify-content: center;
     text-align: center;
     width: 100%;
+  }
+
+  .pagination-label {
+    text-align: center;
   }
 
   .tournament-grid-image {

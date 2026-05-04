@@ -49,6 +49,7 @@ function TournamentsSection() {
   const [allPage, setAllPage] = useState(1);
   const [allHasNextPage, setAllHasNextPage] = useState(false);
   const [allTotalPages, setAllTotalPages] = useState(1);
+  const [upcomingIdSet, setUpcomingIdSet] = useState(() => new Set());
 
   const isCompact = useSyncExternalStore(
     subscribeCompact,
@@ -160,6 +161,57 @@ function TournamentsSection() {
       mounted = false;
     };
   }, [allPage, isModalOpen]);
+
+  useEffect(() => {
+    if (!isModalOpen) {
+      return undefined;
+    }
+
+    let cancelled = false;
+    setUpcomingIdSet(new Set());
+
+    async function loadAllUpcomingIds() {
+      const ids = new Set();
+      let upcomingPage = 1;
+      const perPage = 20;
+
+      try {
+        for (;;) {
+          const response = await fetch(
+            `/api/tournaments/upcoming?page=${upcomingPage}&perPage=${perPage}`
+          );
+          const payload = await response.json();
+
+          if (!response.ok) {
+            break;
+          }
+
+          for (const t of payload.tournaments || []) {
+            ids.add(String(t.id));
+          }
+
+          if (!payload.pagination?.hasNextPage) {
+            break;
+          }
+          upcomingPage += 1;
+          if (upcomingPage > 50) {
+            break;
+          }
+        }
+      } catch {
+        /* ignore; badges optional */
+      }
+
+      if (!cancelled) {
+        setUpcomingIdSet(ids);
+      }
+    }
+
+    loadAllUpcomingIds();
+    return () => {
+      cancelled = true;
+    };
+  }, [isModalOpen]);
 
   const content = useMemo(() => {
     if (loading) {
@@ -274,21 +326,39 @@ function TournamentsSection() {
           </button>
         </div>
         {!isCompact ? (
-          <div className="buttons has-addons tournament-view-switch mt-4 mb-5">
-            <button
-              type="button"
-              className={`button is-small ${viewMode === "list" ? "is-link is-selected-view" : ""}`}
-              onClick={() => setViewMode("list")}
+          <div
+            className="tournament-view-m3 mt-4 mb-5"
+            role="group"
+            aria-label="Vista de torneos"
+          >
+            <span
+              className={`tournament-m3-label ${viewMode === "list" ? "is-active" : ""}`}
             >
               Lista
-            </button>
+            </span>
             <button
               type="button"
-              className={`button is-small ${viewMode === "grid" ? "is-link is-selected-view" : ""}`}
-              onClick={() => setViewMode("grid")}
+              className="tournament-m3-switch"
+              role="switch"
+              aria-checked={viewMode === "grid"}
+              aria-label={
+                viewMode === "list"
+                  ? "Vista lista. Activar para ver en cuadrícula."
+                  : "Vista cuadrícula. Activar para ver en lista."
+              }
+              onClick={() =>
+                setViewMode((current) => (current === "list" ? "grid" : "list"))
+              }
+            >
+              <span className="tournament-m3-track">
+                <span className="tournament-m3-thumb" aria-hidden />
+              </span>
+            </button>
+            <span
+              className={`tournament-m3-label ${viewMode === "grid" ? "is-active" : ""}`}
             >
               Cuadrícula
-            </button>
+            </span>
           </div>
         ) : null}
         {isCompact ? <div className="mt-4">{content}</div> : content}
@@ -345,7 +415,13 @@ function TournamentsSection() {
             {!allLoading && !allError && allTournaments.length > 0 && (
               <div className="tournaments-list modal-tournaments-list">
                 {allTournaments.map((tournament) => (
-                  <article className="box tournament-list-item modal-tournament-item" key={tournament.id}>
+                  <article
+                    className="box tournament-list-item modal-tournament-item"
+                    key={tournament.id}
+                  >
+                    {upcomingIdSet.has(String(tournament.id)) ? (
+                      <span className="tournament-new-badge">NUEVO</span>
+                    ) : null}
                     <div className="tournament-list-media">
                       <img
                         src={tournament.image}

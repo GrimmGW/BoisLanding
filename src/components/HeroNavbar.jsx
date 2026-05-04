@@ -70,6 +70,13 @@ function HeroNavbar() {
           </div>
 
           <div className="bois-nav-mobile-bar">
+            <span className="bois-nav-mobile-spacer" aria-hidden />
+            <a
+              className="bois-nav-logo-wrap bois-nav-logo-center"
+              href="#inicio"
+            >
+              <img className="bois-nav-logo" src={boisLogo} alt="BoisGang" />
+            </a>
             <button
               type="button"
               className="bois-nav-burger"
@@ -80,13 +87,6 @@ function HeroNavbar() {
               <i className="fi fi-br-menu-burger" aria-hidden />
               <span className="is-sr-only">Abrir menú</span>
             </button>
-            <a
-              className="bois-nav-logo-wrap bois-nav-logo-center"
-              href="#inicio"
-            >
-              <img className="bois-nav-logo" src={boisLogo} alt="BoisGang" />
-            </a>
-            <span className="bois-nav-mobile-spacer" aria-hidden />
           </div>
         </div>
       </nav>
