@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 
 const COMPACT_MQ = "(max-width: 768px)";
 
@@ -100,6 +100,12 @@ function TournamentsSection() {
     getCompactSnapshot,
     getCompactServerSnapshot
   );
+
+  const openAllTournamentsModal = useCallback(() => {
+    setAllPage(1);
+    setIsModalOpen(true);
+    setIsModalClosing(false);
+  }, []);
 
   const effectiveViewMode = isCompact ? "grid" : "list";
 
@@ -400,12 +406,8 @@ function TournamentsSection() {
           {tournamentScope === "boisgang" ? (
             <button
               type="button"
-              className="button tournament-all-button"
-              onClick={() => {
-                setAllPage(1);
-                setIsModalOpen(true);
-                setIsModalClosing(false);
-              }}
+              className="button tournament-all-button tournament-all-button--desktop"
+              onClick={openAllTournamentsModal}
             >
               Ver todos los torneos
             </button>
@@ -479,6 +481,17 @@ function TournamentsSection() {
             </button>
           )}
         </div>
+        {tournamentScope === "boisgang" ? (
+          <div className="tournament-all-button-mobile-wrap">
+            <button
+              type="button"
+              className="button tournament-all-button"
+              onClick={openAllTournamentsModal}
+            >
+              Ver todos los torneos
+            </button>
+          </div>
+        ) : null}
       </div>
 
       <div

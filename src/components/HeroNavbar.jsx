@@ -4,6 +4,7 @@ import boisLogo from "../../assets/images/BoisLogotipo.png";
 const LINKS = [
   { href: "#torneos", label: "Torneos" },
   { href: "#nosotros", label: "Quiénes somos" },
+  { href: "#galeria", label: "Galería" },
 ];
 
 const CLOSE_MS = 300;
