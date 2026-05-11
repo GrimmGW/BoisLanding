@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import galMain from "../../assets/images/gallery/gal0.JPG";
-import galTop from "../../assets/images/gallery/gal1.JPG";
-import galBottom from "../../assets/images/gallery/gal2.JPG";
+import galMain from "../../assets/images/about/gal0.JPG";
+import galTop from "../../assets/images/about/gal1.JPG";
+import galBottom from "../../assets/images/about/gal2.JPG";
 
 function AboutSection() {
   const [stats, setStats] = useState({

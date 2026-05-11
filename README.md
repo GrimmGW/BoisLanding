@@ -13,10 +13,15 @@ Landing **personal** para BoisGang: presenta la comunidad, próximos torneos en 
 | 🏠 **Hero** | Identidad visual, navegación al resto del sitio y accesos rápidos a redes. |
 | 🏆 **Torneos** | Lista y cuadrícula de eventos **próximos** (paginación) y modal con **todos** los torneos del organizador; etiqueta **NUEVO** en los que siguen siendo “upcoming”. |
 | 👥 **Nosotros** | Sección “Quiénes somos”, métricas y enlace a Instagram. |
+| 🖼 **Galería** | Bento en escritorio, carrusel en móvil; **preview ligera** en tarjetas y **imagen grande** al abrir el lightbox (ver abajo). |
 | 📬 **Contacto** | Formulario y enlaces (WhatsApp, correo, etc.). |
 | 🔗 **Footer** | CTA a Telegram, branding y enlaces. |
 
 En **desarrollo local**, las rutas `/api/*` pueden servirse con un proxy Express. En **producción (Vercel)**, la misma lógica corre como **serverless functions** bajo `/api`.
+
+### Galería: una foto en repo, dos salidas en build
+
+En [`src/gallery/gallerySources.js`](src/gallery/gallerySources.js) cada archivo de [`assets/images/gallery-assets/`](assets/images/gallery-assets/) se importa **dos veces** con query params de [`vite-imagetools`](https://github.com/JonasKruckenberg/imagetools) (p. ej. ancho y calidad distintos). En `npm run build`, Vite genera WebP optimizado: **preview** para la cuadrícula/carrusel y **full** para el lightbox, sin duplicar los originales en el repositorio.
 
 ---
 
@@ -60,6 +65,8 @@ Proyecto **personal** de uso y portafolio; no se incluye aquí una licencia open
 |---------|-------------------|
 | React / react-dom | MIT |
 | Vite | MIT |
+| vite-imagetools | MIT |
+| sharp (dependencia de imagetools) | Apache-2.0 |
 | Bulma | MIT |
 | Express | MIT |
 | cors | MIT |
