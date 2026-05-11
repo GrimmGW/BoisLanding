@@ -1,6 +1,8 @@
 import smashMargaritaLogo from "../../assets/images/Smash_MargaritaLogo.jpg";
 import boisLogotipo from "../../assets/images/BoisLogotipo.png";
 
+const WHATSAPP_NUMBER = "584123517716";
+
 function FooterSection() {
   return (
     <footer className="footer bois-footer">
@@ -67,13 +69,19 @@ function FooterSection() {
             </div>
             <div>
               <p className="footer-placeholder-title">Recursos</p>
-              <p className="footer-placeholder-item">Guía de torneos</p>
               <p className="footer-placeholder-item">Reglamento</p>
             </div>
             <div>
               <p className="footer-placeholder-title">Contacto</p>
-              <p className="footer-placeholder-item">BoisGang Team</p>
-              <p className="footer-placeholder-item">Más canales pronto</p>
+              <a
+                className="footer-placeholder-item footer-contact-link"
+                href={`https://wa.me/${WHATSAPP_NUMBER}`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                +58 412-3517716
+              </a>
+              <p className="footer-placeholder-item">bois.oficial@gmail.com</p>
             </div>
           </div>
         </div>

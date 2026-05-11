@@ -57,10 +57,9 @@ function ContactSection() {
                       />
                     </svg>
                   </span>
-                  <span>
-                    <strong>WhatsApp</strong>
-                    <br />
-                    +58 412-3517716
+                  <span className="contact-link-text">
+                    <strong className="contact-link-label">WhatsApp</strong>
+                    <p className="contact-link-value">+58 412-3517716</p>
                   </span>
                 </a>
 
@@ -82,10 +81,9 @@ function ContactSection() {
                       />
                     </svg>
                   </span>
-                  <span>
-                    <strong>Correo</strong>
-                    <br />
-                    bois.oficial@gmail.com
+                  <span className="contact-link-text">
+                    <strong className="contact-link-label">Correo</strong>
+                    <p className="contact-link-value">bois.oficial@gmail.com</p>
                   </span>
                 </a>
               </div>
