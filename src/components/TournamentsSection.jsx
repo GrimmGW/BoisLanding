@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 
 const COMPACT_MQ = "(max-width: 768px)";
 
@@ -33,14 +33,58 @@ function formatHour(dateISO) {
   });
 }
 
+async function parseJsonResponse(response) {
+  const contentType = response.headers.get("content-type") || "";
+  const text = await response.text();
+  if (!contentType.includes("application/json")) {
+    throw new Error(
+      "El servidor respondió con HTML en lugar de JSON. En local, ejecuta también el proxy (`npm run dev:server`) y reinícialo tras actualizar. En producción, comprueba que exista la ruta `/api/tournaments/regional`."
+    );
+  }
+  try {
+    return JSON.parse(text);
+  } catch {
+    throw new Error("La respuesta del servidor no es JSON válido.");
+  }
+}
+
+/** Correo del organizador (minúsculas) → estilo y etiqueta mostrada */
+const ORGANIZER_DISPLAY_MAP = new Map([
+  ["bois.oficial@gmail.com", { label: "BoisGang", className: "tournament-organizer-boisgang" }],
+  ["eduardoenriqueperezf@gmail.com", { label: "SEDAH", className: "tournament-organizer-sedah" }]
+]);
+
+function TournamentOrganizerLine({ organizerEmail }) {
+  const raw = typeof organizerEmail === "string" ? organizerEmail.trim() : "";
+  if (!raw) {
+    return null;
+  }
+  const entry = ORGANIZER_DISPLAY_MAP.get(raw.toLowerCase());
+  return (
+    <p className="is-size-7 has-text-grey-light tournament-organizer-line">
+      <strong>Organizador:</strong>{" "}
+      {entry ? (
+        <span className={entry.className}>{entry.label}</span>
+      ) : (
+        <strong className="tournament-organizer-email">{raw}</strong>
+      )}
+    </p>
+  );
+}
+
 function TournamentsSection() {
   const [tournaments, setTournaments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [viewMode, setViewMode] = useState("list");
-  const [page, setPage] = useState(1);
+  const [tournamentScope, setTournamentScope] = useState("boisgang");
+  const [pageByScope, setPageByScope] = useState({ boisgang: 1, regional: 1 });
   const [hasNextPage, setHasNextPage] = useState(false);
   const [totalPages, setTotalPages] = useState(1);
+
+  const tournamentsCacheRef = useRef({
+    boisgang: new Map(),
+    regional: new Map()
+  });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalClosing, setIsModalClosing] = useState(false);
   const [allTournaments, setAllTournaments] = useState([]);
@@ -57,27 +101,56 @@ function TournamentsSection() {
     getCompactServerSnapshot
   );
 
-  const effectiveViewMode = isCompact ? "grid" : viewMode;
+  const effectiveViewMode = isCompact ? "grid" : "list";
+
+  const page = pageByScope[tournamentScope];
 
   useEffect(() => {
+    const cacheMap = tournamentsCacheRef.current[tournamentScope];
+    const cached = cacheMap.get(page);
+
+    if (cached) {
+      setTournaments([...cached.tournaments]);
+      setHasNextPage(cached.hasNextPage);
+      setTotalPages(cached.totalPages);
+      setError("");
+      setLoading(false);
+      return undefined;
+    }
+
     let mounted = true;
 
     async function loadTournaments() {
       setLoading(true);
       setError("");
 
+      const endpoint =
+        tournamentScope === "boisgang"
+          ? `/api/tournaments/upcoming?page=${page}&perPage=5`
+          : `/api/tournaments/regional?page=${page}&perPage=5`;
+
       try {
-        const response = await fetch(`/api/tournaments/upcoming?page=${page}&perPage=5`);
-        const payload = await response.json();
+        const response = await fetch(endpoint);
+        const payload = await parseJsonResponse(response);
 
         if (!response.ok) {
           throw new Error(payload?.error || "No fue posible cargar los torneos.");
         }
 
+        const list = payload.tournaments || [];
+        const nextHas = Boolean(payload.pagination?.hasNextPage);
+        const nextTotal = payload.pagination?.totalPages || 1;
+
+        cacheMap.set(page, {
+          tournaments: [...list],
+          hasNextPage: nextHas,
+          totalPages: nextTotal
+        });
+
         if (mounted) {
-          setTournaments(payload.tournaments || []);
-          setHasNextPage(Boolean(payload.pagination?.hasNextPage));
-          setTotalPages(payload.pagination?.totalPages || 1);
+          setTournaments([...list]);
+          setHasNextPage(nextHas);
+          setTotalPages(nextTotal);
         }
       } catch (err) {
         if (mounted) {
@@ -94,7 +167,7 @@ function TournamentsSection() {
     return () => {
       mounted = false;
     };
-  }, [page]);
+  }, [page, tournamentScope]);
 
   function closeModal() {
     setIsModalClosing(true);
@@ -134,7 +207,7 @@ function TournamentsSection() {
 
       try {
         const response = await fetch(`/api/tournaments/all?page=${allPage}&perPage=6`);
-        const payload = await response.json();
+        const payload = await parseJsonResponse(response);
 
         if (!response.ok) {
           throw new Error(payload?.error || "No fue posible cargar tus torneos.");
@@ -180,7 +253,7 @@ function TournamentsSection() {
           const response = await fetch(
             `/api/tournaments/upcoming?page=${upcomingPage}&perPage=${perPage}`
           );
-          const payload = await response.json();
+          const payload = await parseJsonResponse(response);
 
           if (!response.ok) {
             break;
@@ -248,6 +321,7 @@ function TournamentsSection() {
                   <strong>Fecha:</strong> {formatDate(tournament.startAt)} |{" "}
                   <strong>Hora:</strong> {formatHour(tournament.startAt)}
                 </p>
+                <TournamentOrganizerLine organizerEmail={tournament.organizerEmail} />
                 <a
                   className="button is-small is-light mt-3"
                   href={tournament.url}
@@ -279,12 +353,13 @@ function TournamentsSection() {
               </div>
               <div className="card-content">
                 <p className="title is-5">{tournament.name}</p>
-                <p>
+                <p className="is-size-7 has-text-grey-light">
                   <strong>Fecha:</strong> {formatDate(tournament.startAt)}
                 </p>
-                <p>
+                <p className="is-size-7 has-text-grey-light">
                   <strong>Hora:</strong> {formatHour(tournament.startAt)}
                 </p>
+                <TournamentOrganizerLine organizerEmail={tournament.organizerEmail} />
               </div>
               <footer className="card-footer">
                 <a
@@ -303,70 +378,86 @@ function TournamentsSection() {
     );
   }, [error, loading, tournaments, effectiveViewMode]);
 
+  const tournamentsSubtitle =
+    tournamentScope === "boisgang" ? (
+      <>
+        Eventos competitivos creados por <strong>BoisGang</strong> en start.gg.
+      </>
+    ) : (
+      <>
+        Próximos torneos en <strong>Nueva Esparta</strong> según start.gg.
+      </>
+    );
+
   return (
     <section id="torneos" className="section">
       <div className="container">
         <div className="section-header-inline">
           <div>
             <h2 className="title is-2">Próximos torneos</h2>
-            <p className="subtitle is-5 tournaments-subtitle">
-              Eventos competitivos creados por BoisGang en start.gg.
-            </p>
+            <p className="subtitle is-5 tournaments-subtitle">{tournamentsSubtitle}</p>
           </div>
-          <button
-            type="button"
-            className="button tournament-all-button"
-            onClick={() => {
-              setAllPage(1);
-              setIsModalOpen(true);
-              setIsModalClosing(false);
-            }}
-          >
-            Ver todos los torneos
-          </button>
-        </div>
-        {!isCompact ? (
-          <div
-            className="tournament-view-m3 mt-4 mb-5"
-            role="group"
-            aria-label="Vista de torneos"
-          >
-            <span
-              className={`tournament-m3-label ${viewMode === "list" ? "is-active" : ""}`}
-            >
-              Lista
-            </span>
+          {tournamentScope === "boisgang" ? (
             <button
               type="button"
-              className="tournament-m3-switch"
-              role="switch"
-              aria-checked={viewMode === "grid"}
-              aria-label={
-                viewMode === "list"
-                  ? "Vista lista. Activar para ver en cuadrícula."
-                  : "Vista cuadrícula. Activar para ver en lista."
-              }
-              onClick={() =>
-                setViewMode((current) => (current === "list" ? "grid" : "list"))
-              }
+              className="button tournament-all-button"
+              onClick={() => {
+                setAllPage(1);
+                setIsModalOpen(true);
+                setIsModalClosing(false);
+              }}
             >
-              <span className="tournament-m3-track">
-                <span className="tournament-m3-thumb" aria-hidden />
-              </span>
+              Ver todos los torneos
             </button>
-            <span
-              className={`tournament-m3-label ${viewMode === "grid" ? "is-active" : ""}`}
-            >
-              Cuadrícula
+          ) : null}
+        </div>
+        <div
+          className="tournaments-toolbar tournament-view-m3 mt-4 mb-5"
+          role="group"
+          aria-label="Alcance de torneos"
+        >
+          <span
+            className={`tournament-m3-label ${tournamentScope === "boisgang" ? "is-active" : ""}`}
+          >
+            Solo BoisGang
+          </span>
+          <button
+            type="button"
+            className="tournament-m3-switch"
+            role="switch"
+            aria-checked={tournamentScope === "regional"}
+            aria-label={
+              tournamentScope === "boisgang"
+                ? "Solo torneos BoisGang. Activar para vista regional en Nueva Esparta."
+                : "Vista regional. Activar para solo torneos BoisGang."
+            }
+            onClick={() => {
+              setTournamentScope((current) =>
+                current === "boisgang" ? "regional" : "boisgang"
+              );
+            }}
+          >
+            <span className="tournament-m3-track">
+              <span className="tournament-m3-thumb" aria-hidden />
             </span>
-          </div>
-        ) : null}
-        {isCompact ? <div className="mt-4">{content}</div> : content}
+          </button>
+          <span
+            className={`tournament-m3-label ${tournamentScope === "regional" ? "is-active" : ""}`}
+          >
+            Vista Regional
+          </span>
+        </div>
+        <div className="mt-1">{content}</div>
         <div className="pagination-controls mt-5">
           <button
             type="button"
             className="button is-small"
-            onClick={() => setPage((current) => Math.max(1, current - 1))}
+            onClick={() =>
+              setPageByScope((prev) => ({
+                ...prev,
+                [tournamentScope]: Math.max(1, prev[tournamentScope] - 1)
+              }))
+            }
             disabled={page === 1 || loading}
           >
             Anterior
@@ -376,7 +467,12 @@ function TournamentsSection() {
             <button
               type="button"
               className="button is-small is-link"
-              onClick={() => setPage((current) => current + 1)}
+              onClick={() =>
+                setPageByScope((prev) => ({
+                  ...prev,
+                  [tournamentScope]: prev[tournamentScope] + 1
+                }))
+              }
               disabled={loading}
             >
               Siguiente
@@ -435,6 +531,7 @@ function TournamentsSection() {
                         <strong>Fecha:</strong> {formatDate(tournament.startAt)} |{" "}
                         <strong>Hora:</strong> {formatHour(tournament.startAt)}
                       </p>
+                      <TournamentOrganizerLine organizerEmail={tournament.organizerEmail} />
                       <a
                         className="button is-small is-light mt-3"
                         href={tournament.url}

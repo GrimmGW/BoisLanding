@@ -11,13 +11,13 @@ Landing **personal** para BoisGang: presenta la comunidad, próximos torneos en 
 | Área | Descripción |
 |------|-------------|
 | 🏠 **Hero** | Identidad visual, navegación al resto del sitio y accesos rápidos a redes. |
-| 🏆 **Torneos** | Lista y cuadrícula de eventos **próximos** (paginación) y modal con **todos** los torneos del organizador; etiqueta **NUEVO** en los que siguen siendo “upcoming”. |
+| 🏆 **Torneos** | **Solo BoisGang** (próximos + modal “todos”) y **Vista Regional** (start.gg por ubicación); lista en escritorio y cuadrícula en móvil; etiqueta **NUEVO** en el modal. |
 | 👥 **Nosotros** | Sección “Quiénes somos”, métricas y enlace a Instagram. |
 | 🖼 **Galería** | Bento en escritorio, carrusel en móvil; **preview ligera** en tarjetas y **imagen grande** al abrir el lightbox (ver abajo). |
 | 📬 **Contacto** | Formulario y enlaces (WhatsApp, correo, etc.). |
 | 🔗 **Footer** | CTA a Telegram, branding y enlaces. |
 
-En **desarrollo local**, las rutas `/api/*` pueden servirse con un proxy Express. En **producción (Vercel)**, la misma lógica corre como **serverless functions** bajo `/api`.
+En **desarrollo local**, las rutas `/api/*` pueden servirse con un proxy Express. En **producción (Vercel)**, la misma lógica corre como **serverless functions** bajo `/api` (archivos en [`api/`](api/)); [`vercel.json`](vercel.json) define el build de Vite y un rewrite SPA que **no afecta** a `/api/*`.
 
 ### Galería: una foto en repo, dos salidas en build
 
@@ -31,13 +31,16 @@ La app **no** llama a start.gg desde el navegador: el token vive solo en el serv
 
 - **Endpoint:** `https://api.start.gg/gql/alpha` (API GraphQL “alpha” de start.gg).
 - **Autenticación:** cabecera `Authorization: Bearer <STARTGG_API_TOKEN>`.
-- **Consultas:** se usa una query que filtra torneos por **`ownerId`** (organizador) y, según el caso, por **`upcoming: true`** para los próximos eventos.
+- **Consultas:** por organizador (`ownerId` + `upcoming`) para BoisGang; por **ubicación** (`location` + `upcoming`) para la vista regional (coordenadas/radio configurables).
 - **Datos normalizados:** cada torneo expone al frontend campos como `id`, `nombre`, `startAt`, `url`, `imagen`, etc., tras mapear la respuesta de GraphQL.
 
 Variables de entorno relevantes (ver [`.env.example`](.env.example)):
 
-- `STARTGG_API_TOKEN` — obligatorio para que funcionen `/api/tournaments/*`.
-- `STARTGG_OWNER_ID` — ID del organizador en start.gg cuyos torneos se muestran.
+- `STARTGG_API_TOKEN` — obligatorio para que funcionen `/api/tournaments/*` y `/api/about/stats`.
+- `STARTGG_OWNER_ID` — ID del organizador en start.gg (vista Solo BoisGang).
+- `STARTGG_REGION_COORDINATES` / `STARTGG_REGION_RADIUS` — vista regional (ver `.env.example`).
+
+Despliegue: conecta el repo en Vercel (framework **Vite** detectado), define las variables en el panel y despliega. No hace falta `PORT` en Vercel.
 
 ---
 
