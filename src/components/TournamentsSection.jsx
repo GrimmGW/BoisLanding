@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import TournamentGamesRow from "./TournamentGamesRow.jsx";
 
 const COMPACT_MQ = "(max-width: 768px)";
 
@@ -328,6 +329,7 @@ function TournamentsSection() {
                   <strong>Hora:</strong> {formatHour(tournament.startAt)}
                 </p>
                 <TournamentOrganizerLine organizerEmail={tournament.organizerEmail} />
+                <TournamentGamesRow games={tournament.games} />
                 <a
                   className="button is-small is-light mt-3"
                   href={tournament.url}
@@ -366,6 +368,7 @@ function TournamentsSection() {
                   <strong>Hora:</strong> {formatHour(tournament.startAt)}
                 </p>
                 <TournamentOrganizerLine organizerEmail={tournament.organizerEmail} />
+                <TournamentGamesRow games={tournament.games} maxVisible={5} />
               </div>
               <footer className="card-footer">
                 <a
@@ -545,6 +548,7 @@ function TournamentsSection() {
                         <strong>Hora:</strong> {formatHour(tournament.startAt)}
                       </p>
                       <TournamentOrganizerLine organizerEmail={tournament.organizerEmail} />
+                      <TournamentGamesRow games={tournament.games} />
                       <a
                         className="button is-small is-light mt-3"
                         href={tournament.url}

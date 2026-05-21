@@ -52,6 +52,50 @@ function toISODate(unixTimestamp) {
   return new Date(unixTimestamp * 1000).toISOString();
 }
 
+function dedupeGamesFromEvents(events) {
+  if (!Array.isArray(events)) return [];
+  const seen = new Set();
+  const games = [];
+
+  for (const ev of events) {
+    const vg = ev?.videogame;
+    const videogameId = vg?.id != null ? String(vg.id) : "";
+    if (!videogameId || seen.has(videogameId)) continue;
+    seen.add(videogameId);
+    games.push({
+      videogameId,
+      name: (vg.displayName || vg.name || ev.name || "Juego").trim(),
+      eventName: typeof ev.name === "string" ? ev.name.trim() : ""
+    });
+  }
+
+  return games;
+}
+
+const TOURNAMENT_NODE_FIELDS = `
+          id
+          name
+          slug
+          startAt
+          primaryContact
+          primaryContactType
+          bannerImages: images(type: "banner") {
+            url
+          }
+          thumbnailImages: images(type: "profile") {
+            url
+          }
+          events {
+            id
+            name
+            videogame {
+              id
+              name
+              displayName
+            }
+          }
+`;
+
 function normalizeTournament(event) {
   const banner = event.bannerImages?.[0]?.url;
   const thumbnail = event.thumbnailImages?.[0]?.url;
@@ -67,7 +111,8 @@ function normalizeTournament(event) {
     url: event.slug ? `https://start.gg/${event.slug}` : "https://start.gg/",
     slug: event.slug || "",
     image: banner || thumbnail || FALLBACK_IMAGE,
-    organizerEmail: email
+    organizerEmail: email,
+    games: dedupeGamesFromEvents(event.events)
   };
 }
 
@@ -174,19 +219,7 @@ ${ownerFilterBlock}
           total
           totalPages
         }
-        nodes {
-          id
-          name
-          slug
-          startAt
-          primaryContact
-          primaryContactType
-          bannerImages: images(type: "banner") {
-            url
-          }
-          thumbnailImages: images(type: "profile") {
-            url
-          }
+        nodes {${TOURNAMENT_NODE_FIELDS}
         }
       }
     }
@@ -260,19 +293,7 @@ async function fetchRegionalTournaments({ page, perPage }) {
           total
           totalPages
         }
-        nodes {
-          id
-          name
-          slug
-          startAt
-          primaryContact
-          primaryContactType
-          bannerImages: images(type: "banner") {
-            url
-          }
-          thumbnailImages: images(type: "profile") {
-            url
-          }
+        nodes {${TOURNAMENT_NODE_FIELDS}
         }
       }
     }
