@@ -85,7 +85,7 @@ function GallerySection() {
     (async () => {
       for (const item of queue) {
         if (cancelled) return;
-        await ensureGalleryFullDecoded(item.fullSrc);
+        await ensureGalleryFullDecoded(item.originalSrc);
       }
     })();
     return () => {
@@ -97,7 +97,7 @@ function GallerySection() {
     const i = lbIndexRef.current;
     if (i === null || i <= 0) return;
     const prev = GALLERY_ITEMS[i - 1];
-    await ensureGalleryFullDecoded(prev.fullSrc);
+    await ensureGalleryFullDecoded(prev.originalSrc);
     setLbDragX(0);
     setLbEnterDir("prev");
     setLightboxIndex(i - 1);
@@ -107,7 +107,7 @@ function GallerySection() {
     const i = lbIndexRef.current;
     if (i === null || i >= GALLERY_ITEMS.length - 1) return;
     const next = GALLERY_ITEMS[i + 1];
-    await ensureGalleryFullDecoded(next.fullSrc);
+    await ensureGalleryFullDecoded(next.originalSrc);
     setLbDragX(0);
     setLbEnterDir("next");
     setLightboxIndex(i + 1);
@@ -343,7 +343,7 @@ function GallerySection() {
               </button>
               <img
                 key={lightboxIndex}
-                src={activeItem.fullSrc}
+                src={activeItem.originalSrc}
                 alt={activeItem.alt}
                 className={`gallery-lightbox-image gallery-lightbox-image--enter-${lbEnterDir}${
                   lbDragX !== 0 ? " is-dragging" : ""

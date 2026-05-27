@@ -1,24 +1,23 @@
 /**
- * Una sola imagen en disco por ítem; en build Vite + vite-imagetools generan
- * variantes WebP (preview ligera vs. full para el lightbox).
+ * Preview WebP (imagetools) en tarjetas; original (?url) en el lightbox.
  */
 import yukitoDantePrev from "../../assets/images/gallery-assets/yukito_dante_coconautic.JPG?w=720&format=webp&quality=76";
-import yukitoDanteFull from "../../assets/images/gallery-assets/yukito_dante_coconautic.JPG?w=2400&format=webp&quality=90";
+import yukitoDanteOriginal from "../../assets/images/gallery-assets/yukito_dante_coconautic.JPG?url";
 
 import dareotPrev from "../../assets/images/gallery-assets/dareot_dexwe_cocoleague.JPG?w=720&format=webp&quality=76";
-import dareotFull from "../../assets/images/gallery-assets/dareot_dexwe_cocoleague.JPG?w=2400&format=webp&quality=90";
+import dareotOriginal from "../../assets/images/gallery-assets/dareot_dexwe_cocoleague.JPG?url";
 
 import setsHubPrev from "../../assets/images/gallery-assets/sets_hub.jpg?w=720&format=webp&quality=76";
-import setsHubFull from "../../assets/images/gallery-assets/sets_hub.jpg?w=2400&format=webp&quality=90";
+import setsHubOriginal from "../../assets/images/gallery-assets/sets_hub.jpg?url";
 
 import sets2HubPrev from "../../assets/images/gallery-assets/sets2_hub.jpg?w=720&format=webp&quality=76";
-import sets2HubFull from "../../assets/images/gallery-assets/sets2_hub.jpg?w=2400&format=webp&quality=90";
+import sets2HubOriginal from "../../assets/images/gallery-assets/sets2_hub.jpg?url";
 
 import notochorkPrev from "../../assets/images/gallery-assets/notochork_yukito_coconautic.JPG?w=720&format=webp&quality=76";
-import notochorkFull from "../../assets/images/gallery-assets/notochork_yukito_coconautic.JPG?w=2400&format=webp&quality=90";
+import notochorkOriginal from "../../assets/images/gallery-assets/notochork_yukito_coconautic.JPG?url";
 
 import winnersPrev from "../../assets/images/gallery-assets/winners_hubx.jpg?w=720&format=webp&quality=76";
-import winnersFull from "../../assets/images/gallery-assets/winners_hubx.jpg?w=2400&format=webp&quality=90";
+import winnersOriginal from "../../assets/images/gallery-assets/winners_hubx.jpg?url";
 
 function imageSrc(mod) {
   if (typeof mod === "string") return mod;
@@ -31,12 +30,12 @@ function imageSrc(mod) {
 
 export const GALLERY_ITEMS = [
   {
-    id: "g1",
+    id: "g5",
     place: "COCONAUTIC",
-    title: "Partida memorable",
-    alt: "Partida memorable",
-    previewSrc: imageSrc(yukitoDantePrev),
-    fullSrc: imageSrc(yukitoDanteFull)
+    title: "Encuentro reñido",
+    alt: "Mejores momentos",
+    previewSrc: imageSrc(notochorkPrev),
+    originalSrc: imageSrc(notochorkOriginal)
   },
   {
     id: "g2",
@@ -44,31 +43,31 @@ export const GALLERY_ITEMS = [
     title: "Match épico",
     alt: "Match épico",
     previewSrc: imageSrc(dareotPrev),
-    fullSrc: imageSrc(dareotFull)
+    originalSrc: imageSrc(dareotOriginal)
   },
   {
     id: "g3",
     place: "Smash Hub 4",
-    title: "Múltitud y espectadores",
-    alt: "Múltitud y espectadores",
+    title: "Multitud y espectadores",
+    alt: "Multitud y espectadores",
     previewSrc: imageSrc(setsHubPrev),
-    fullSrc: imageSrc(setsHubFull)
+    originalSrc: imageSrc(setsHubOriginal)
   },
   {
     id: "g4",
     place: "Smash Hub",
-    title: "Múltitud y espectadores",
-    alt: "Múltitud y espectadores",
+    title: "Multitud y espectadores",
+    alt: "Multitud y espectadores",
     previewSrc: imageSrc(sets2HubPrev),
-    fullSrc: imageSrc(sets2HubFull)
+    originalSrc: imageSrc(sets2HubOriginal)
   },
   {
-    id: "g5",
+    id: "g1",
     place: "COCONAUTIC",
-    title: "Encuentro reñido",
-    alt: "Mejores momentos",
-    previewSrc: imageSrc(notochorkPrev),
-    fullSrc: imageSrc(notochorkFull)
+    title: "Partida memorable",
+    alt: "Partida memorable",
+    previewSrc: imageSrc(yukitoDantePrev),
+    originalSrc: imageSrc(yukitoDanteOriginal)
   },
   {
     id: "g6",
@@ -76,6 +75,6 @@ export const GALLERY_ITEMS = [
     title: "Foto ganadores",
     alt: "Premios y foto grupal",
     previewSrc: imageSrc(winnersPrev),
-    fullSrc: imageSrc(winnersFull)
+    originalSrc: imageSrc(winnersOriginal)
   }
 ];

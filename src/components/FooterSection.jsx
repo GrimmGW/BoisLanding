@@ -81,7 +81,15 @@ function FooterSection() {
               >
                 +58 412-3517716
               </a>
-              <p className="footer-placeholder-item">bois.oficial@gmail.com</p>
+              <br />
+              <a
+                className="footer-placeholder-item footer-contact-link"
+                href={`mailto:bois.oficial@gmail.com`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                bois.oficial@gmail.com
+              </a>
             </div>
           </div>
         </div>

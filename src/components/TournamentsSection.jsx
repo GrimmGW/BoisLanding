@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { createPortal } from "react-dom";
 import TournamentGamesRow from "./TournamentGamesRow.jsx";
+import { lockPageScroll } from "../utils/lockPageScroll.js";
 
 const COMPACT_MQ = "(max-width: 768px)";
 
@@ -86,6 +88,7 @@ function TournamentsSection() {
     boisgang: new Map(),
     regional: new Map()
   });
+  const modalRootRef = useRef(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalClosing, setIsModalClosing] = useState(false);
   const [allTournaments, setAllTournaments] = useState([]);
@@ -198,6 +201,30 @@ function TournamentsSection() {
     window.addEventListener("keydown", onKeyDown);
     return () => {
       window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [isModalOpen]);
+
+  useEffect(() => {
+    if (!isModalOpen) {
+      return undefined;
+    }
+
+    const unlock = lockPageScroll();
+
+    const blockBackgroundScroll = (event) => {
+      if (modalRootRef.current?.contains(event.target)) {
+        return;
+      }
+      event.preventDefault();
+    };
+
+    document.addEventListener("touchmove", blockBackgroundScroll, { passive: false });
+    document.addEventListener("wheel", blockBackgroundScroll, { passive: false });
+
+    return () => {
+      document.removeEventListener("touchmove", blockBackgroundScroll);
+      document.removeEventListener("wheel", blockBackgroundScroll);
+      unlock();
     };
   }, [isModalOpen]);
 
@@ -329,7 +356,7 @@ function TournamentsSection() {
                   <strong>Hora:</strong> {formatHour(tournament.startAt)}
                 </p>
                 <TournamentOrganizerLine organizerEmail={tournament.organizerEmail} />
-                <TournamentGamesRow games={tournament.games} />
+                <TournamentGamesRow events={tournament.events} />
                 <a
                   className="button is-small is-light mt-3"
                   href={tournament.url}
@@ -368,7 +395,7 @@ function TournamentsSection() {
                   <strong>Hora:</strong> {formatHour(tournament.startAt)}
                 </p>
                 <TournamentOrganizerLine organizerEmail={tournament.organizerEmail} />
-                <TournamentGamesRow games={tournament.games} maxVisible={5} />
+                <TournamentGamesRow events={tournament.events} />
               </div>
               <footer className="card-footer">
                 <a
@@ -497,15 +524,21 @@ function TournamentsSection() {
         ) : null}
       </div>
 
-      <div
-        className={`modal ${isModalOpen || isModalClosing ? "is-active" : ""} ${
-          isModalClosing ? "is-closing" : "is-opening"
-        }`}
-      >
+      {(isModalOpen || isModalClosing) &&
+        createPortal(
+          <div
+            ref={modalRootRef}
+            className={`modal is-active ${isModalClosing ? "is-closing" : "is-opening"}`}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="tournaments-all-modal-title"
+          >
         <div className="modal-background" onClick={closeModal} />
         <div className="modal-card tournaments-modal-card">
           <header className="modal-card-head">
-            <p className="modal-card-title">Todos mis torneos</p>
+            <p id="tournaments-all-modal-title" className="modal-card-title">
+              Todos los torneos de BoisGang
+            </p>
             <button
               type="button"
               className="delete"
@@ -548,7 +581,7 @@ function TournamentsSection() {
                         <strong>Hora:</strong> {formatHour(tournament.startAt)}
                       </p>
                       <TournamentOrganizerLine organizerEmail={tournament.organizerEmail} />
-                      <TournamentGamesRow games={tournament.games} />
+                      <TournamentGamesRow events={tournament.events} />
                       <a
                         className="button is-small is-light mt-3"
                         href={tournament.url}
@@ -589,7 +622,9 @@ function TournamentsSection() {
             </div>
           </footer>
         </div>
-      </div>
+          </div>,
+          document.body
+        )}
     </section>
   );
 }

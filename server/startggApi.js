@@ -52,24 +52,16 @@ function toISODate(unixTimestamp) {
   return new Date(unixTimestamp * 1000).toISOString();
 }
 
-function dedupeGamesFromEvents(events) {
+function listTournamentEvents(events) {
   if (!Array.isArray(events)) return [];
-  const seen = new Set();
-  const games = [];
 
-  for (const ev of events) {
-    const vg = ev?.videogame;
-    const videogameId = vg?.id != null ? String(vg.id) : "";
-    if (!videogameId || seen.has(videogameId)) continue;
-    seen.add(videogameId);
-    games.push({
-      videogameId,
-      name: (vg.displayName || vg.name || ev.name || "Juego").trim(),
-      eventName: typeof ev.name === "string" ? ev.name.trim() : ""
-    });
-  }
-
-  return games;
+  return events
+    .map((ev) => {
+      const name = typeof ev?.name === "string" ? ev.name.trim() : "";
+      if (!name || ev?.id == null) return null;
+      return { id: String(ev.id), name };
+    })
+    .filter(Boolean);
 }
 
 const TOURNAMENT_NODE_FIELDS = `
@@ -112,7 +104,7 @@ function normalizeTournament(event) {
     slug: event.slug || "",
     image: banner || thumbnail || FALLBACK_IMAGE,
     organizerEmail: email,
-    games: dedupeGamesFromEvents(event.events)
+    events: listTournamentEvents(event.events)
   };
 }
 

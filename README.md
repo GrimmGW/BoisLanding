@@ -21,7 +21,7 @@ En **desarrollo local**, las rutas `/api/*` pueden servirse con un proxy Express
 
 ### Galería: una foto en repo, dos salidas en build
 
-En [`src/gallery/gallerySources.js`](src/gallery/gallerySources.js) cada archivo de [`assets/images/gallery-assets/`](assets/images/gallery-assets/) se importa **dos veces** con query params de [`vite-imagetools`](https://github.com/JonasKruckenberg/imagetools) (p. ej. ancho y calidad distintos). En `npm run build`, Vite genera WebP optimizado: **preview** para la cuadrícula/carrusel y **full** para el lightbox, sin duplicar los originales en el repositorio.
+En [`src/gallery/gallerySources.js`](src/gallery/gallerySources.js) cada archivo de [`assets/images/gallery-assets/`](assets/images/gallery-assets/) usa **preview** WebP optimizado (imagetools) en tarjetas/carrusel y **original** (`?url`) en el lightbox para máxima calidad.
 
 ---
 
@@ -34,13 +34,14 @@ La app **no** llama a start.gg desde el navegador: el token vive solo en el serv
 - **Consultas:** por organizador (`ownerId` + `upcoming`) para BoisGang; por **ubicación** (`location` + `upcoming`) para la vista regional (coordenadas/radio configurables).
 - **Datos normalizados:** cada torneo expone al frontend campos como `id`, `nombre`, `startAt`, `url`, `imagen`, etc., tras mapear la respuesta de GraphQL.
 
-Variables de entorno relevantes (ver [`.env.example`](.env.example)):
+Variables de entorno relevantes:
 
 - `STARTGG_API_TOKEN` — obligatorio para que funcionen `/api/tournaments/*` y `/api/about/stats`.
 - `STARTGG_OWNER_ID` — ID del organizador en start.gg (vista Solo BoisGang).
-- `STARTGG_REGION_COORDINATES` / `STARTGG_REGION_RADIUS` — vista regional (ver `.env.example`).
+- `STARTGG_REGION_COORDINATES` / `STARTGG_REGION_RADIUS` — vista regional.
+- `VITE_SITE_URL` — URL pública del sitio **sin** barra final (ej. `https://tu-proyecto.vercel.app`). En build se inyecta en Open Graph / Twitter (`og:image`, `twitter:image`). Sin ella, esas metas quedan relativas y las vistas previas en redes pueden fallar.
 
-Despliegue: conecta el repo en Vercel (framework **Vite** detectado), define las variables en el panel y despliega. No hace falta `PORT` en Vercel.
+Despliegue: conecta el repo en Vercel (framework **Vite** detectado), define las variables en el panel (incluye `VITE_SITE_URL`) y despliega. No hace falta `PORT` en Vercel.
 
 ---
 
