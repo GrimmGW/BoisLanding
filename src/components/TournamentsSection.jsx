@@ -1,7 +1,5 @@
-import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
-import { createPortal } from "react-dom";
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import TournamentGamesRow from "./TournamentGamesRow.jsx";
-import { lockPageScroll } from "../utils/lockPageScroll.js";
 
 const COMPACT_MQ = "(max-width: 768px)";
 
@@ -79,25 +77,10 @@ function TournamentsSection() {
   const [tournaments, setTournaments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [tournamentScope, setTournamentScope] = useState("boisgang");
-  const [pageByScope, setPageByScope] = useState({ boisgang: 1, regional: 1 });
+  const [page, setPage] = useState(1);
   const [hasNextPage, setHasNextPage] = useState(false);
   const [totalPages, setTotalPages] = useState(1);
-
-  const tournamentsCacheRef = useRef({
-    boisgang: new Map(),
-    regional: new Map()
-  });
-  const modalRootRef = useRef(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isModalClosing, setIsModalClosing] = useState(false);
-  const [allTournaments, setAllTournaments] = useState([]);
-  const [allLoading, setAllLoading] = useState(false);
-  const [allError, setAllError] = useState("");
-  const [allPage, setAllPage] = useState(1);
-  const [allHasNextPage, setAllHasNextPage] = useState(false);
-  const [allTotalPages, setAllTotalPages] = useState(1);
-  const [upcomingIdSet, setUpcomingIdSet] = useState(() => new Set());
+  const pageCacheRef = useRef(new Map());
 
   const isCompact = useSyncExternalStore(
     subscribeCompact,
@@ -105,18 +88,10 @@ function TournamentsSection() {
     getCompactServerSnapshot
   );
 
-  const openAllTournamentsModal = useCallback(() => {
-    setAllPage(1);
-    setIsModalOpen(true);
-    setIsModalClosing(false);
-  }, []);
-
   const effectiveViewMode = isCompact ? "grid" : "list";
 
-  const page = pageByScope[tournamentScope];
-
   useEffect(() => {
-    const cacheMap = tournamentsCacheRef.current[tournamentScope];
+    const cacheMap = pageCacheRef.current;
     const cached = cacheMap.get(page);
 
     if (cached) {
@@ -134,13 +109,8 @@ function TournamentsSection() {
       setLoading(true);
       setError("");
 
-      const endpoint =
-        tournamentScope === "boisgang"
-          ? `/api/tournaments/upcoming?page=${page}&perPage=5`
-          : `/api/tournaments/regional?page=${page}&perPage=5`;
-
       try {
-        const response = await fetch(endpoint);
+        const response = await fetch(`/api/tournaments/regional?page=${page}&perPage=5`);
         const payload = await parseJsonResponse(response);
 
         if (!response.ok) {
@@ -177,148 +147,7 @@ function TournamentsSection() {
     return () => {
       mounted = false;
     };
-  }, [page, tournamentScope]);
-
-  function closeModal() {
-    setIsModalClosing(true);
-    window.setTimeout(() => {
-      setIsModalOpen(false);
-      setIsModalClosing(false);
-    }, 220);
-  }
-
-  useEffect(() => {
-    if (!isModalOpen) {
-      return undefined;
-    }
-
-    function onKeyDown(event) {
-      if (event.key === "Escape") {
-        closeModal();
-      }
-    }
-
-    window.addEventListener("keydown", onKeyDown);
-    return () => {
-      window.removeEventListener("keydown", onKeyDown);
-    };
-  }, [isModalOpen]);
-
-  useEffect(() => {
-    if (!isModalOpen) {
-      return undefined;
-    }
-
-    const unlock = lockPageScroll();
-
-    const blockBackgroundScroll = (event) => {
-      if (modalRootRef.current?.contains(event.target)) {
-        return;
-      }
-      event.preventDefault();
-    };
-
-    document.addEventListener("touchmove", blockBackgroundScroll, { passive: false });
-    document.addEventListener("wheel", blockBackgroundScroll, { passive: false });
-
-    return () => {
-      document.removeEventListener("touchmove", blockBackgroundScroll);
-      document.removeEventListener("wheel", blockBackgroundScroll);
-      unlock();
-    };
-  }, [isModalOpen]);
-
-  useEffect(() => {
-    if (!isModalOpen) {
-      return;
-    }
-
-    let mounted = true;
-
-    async function loadAllTournaments() {
-      setAllLoading(true);
-      setAllError("");
-
-      try {
-        const response = await fetch(`/api/tournaments/all?page=${allPage}&perPage=6`);
-        const payload = await parseJsonResponse(response);
-
-        if (!response.ok) {
-          throw new Error(payload?.error || "No fue posible cargar tus torneos.");
-        }
-
-        if (mounted) {
-          setAllTournaments(payload.tournaments || []);
-          setAllHasNextPage(Boolean(payload.pagination?.hasNextPage));
-          setAllTotalPages(payload.pagination?.totalPages || 1);
-        }
-      } catch (err) {
-        if (mounted) {
-          setAllError(err.message || "Error cargando todos los torneos.");
-        }
-      } finally {
-        if (mounted) {
-          setAllLoading(false);
-        }
-      }
-    }
-
-    loadAllTournaments();
-    return () => {
-      mounted = false;
-    };
-  }, [allPage, isModalOpen]);
-
-  useEffect(() => {
-    if (!isModalOpen) {
-      return undefined;
-    }
-
-    let cancelled = false;
-    setUpcomingIdSet(new Set());
-
-    async function loadAllUpcomingIds() {
-      const ids = new Set();
-      let upcomingPage = 1;
-      const perPage = 20;
-
-      try {
-        for (;;) {
-          const response = await fetch(
-            `/api/tournaments/upcoming?page=${upcomingPage}&perPage=${perPage}`
-          );
-          const payload = await parseJsonResponse(response);
-
-          if (!response.ok) {
-            break;
-          }
-
-          for (const t of payload.tournaments || []) {
-            ids.add(String(t.id));
-          }
-
-          if (!payload.pagination?.hasNextPage) {
-            break;
-          }
-          upcomingPage += 1;
-          if (upcomingPage > 50) {
-            break;
-          }
-        }
-      } catch {
-        /* ignore; badges optional */
-      }
-
-      if (!cancelled) {
-        setUpcomingIdSet(ids);
-      }
-    }
-
-    loadAllUpcomingIds();
-    return () => {
-      cancelled = true;
-    };
-  }, [isModalOpen]);
+  }, [page]);
 
   const content = useMemo(() => {
     if (loading) {
@@ -414,82 +243,23 @@ function TournamentsSection() {
     );
   }, [error, loading, tournaments, effectiveViewMode]);
 
-  const tournamentsSubtitle =
-    tournamentScope === "boisgang" ? (
-      <>
-        Eventos competitivos creados por <strong>BoisGang</strong> en start.gg.
-      </>
-    ) : (
-      <>
-        Próximos torneos en <strong>Nueva Esparta</strong> según start.gg.
-      </>
-    );
-
   return (
     <section id="torneos" className="section">
       <div className="container">
         <div className="section-header-inline">
           <div>
             <h2 className="title is-2">Próximos torneos</h2>
-            <p className="subtitle is-5 tournaments-subtitle">{tournamentsSubtitle}</p>
+            <p className="subtitle is-5 tournaments-subtitle">
+              Eventos competitivos en Nueva Esparta.
+            </p>
           </div>
-          {tournamentScope === "boisgang" ? (
-            <button
-              type="button"
-              className="button tournament-all-button tournament-all-button--desktop"
-              onClick={openAllTournamentsModal}
-            >
-              Ver todos los torneos
-            </button>
-          ) : null}
         </div>
-        <div
-          className="tournaments-toolbar tournament-view-m3 mt-4 mb-5"
-          role="group"
-          aria-label="Alcance de torneos"
-        >
-          <span
-            className={`tournament-m3-label ${tournamentScope === "boisgang" ? "is-active" : ""}`}
-          >
-            Solo BoisGang
-          </span>
-          <button
-            type="button"
-            className="tournament-m3-switch"
-            role="switch"
-            aria-checked={tournamentScope === "regional"}
-            aria-label={
-              tournamentScope === "boisgang"
-                ? "Solo torneos BoisGang. Activar para vista regional en Nueva Esparta."
-                : "Vista regional. Activar para solo torneos BoisGang."
-            }
-            onClick={() => {
-              setTournamentScope((current) =>
-                current === "boisgang" ? "regional" : "boisgang"
-              );
-            }}
-          >
-            <span className="tournament-m3-track">
-              <span className="tournament-m3-thumb" aria-hidden />
-            </span>
-          </button>
-          <span
-            className={`tournament-m3-label ${tournamentScope === "regional" ? "is-active" : ""}`}
-          >
-            Vista Regional
-          </span>
-        </div>
-        <div className="mt-1">{content}</div>
+        <div className="mt-4">{content}</div>
         <div className="pagination-controls mt-5">
           <button
             type="button"
             className="button is-small"
-            onClick={() =>
-              setPageByScope((prev) => ({
-                ...prev,
-                [tournamentScope]: Math.max(1, prev[tournamentScope] - 1)
-              }))
-            }
+            onClick={() => setPage((current) => Math.max(1, current - 1))}
             disabled={page === 1 || loading}
           >
             Anterior
@@ -499,132 +269,14 @@ function TournamentsSection() {
             <button
               type="button"
               className="button is-small is-link"
-              onClick={() =>
-                setPageByScope((prev) => ({
-                  ...prev,
-                  [tournamentScope]: prev[tournamentScope] + 1
-                }))
-              }
+              onClick={() => setPage((current) => current + 1)}
               disabled={loading}
             >
               Siguiente
             </button>
           )}
         </div>
-        {tournamentScope === "boisgang" ? (
-          <div className="tournament-all-button-mobile-wrap">
-            <button
-              type="button"
-              className="button tournament-all-button"
-              onClick={openAllTournamentsModal}
-            >
-              Ver todos los torneos
-            </button>
-          </div>
-        ) : null}
       </div>
-
-      {(isModalOpen || isModalClosing) &&
-        createPortal(
-          <div
-            ref={modalRootRef}
-            className={`modal is-active ${isModalClosing ? "is-closing" : "is-opening"}`}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="tournaments-all-modal-title"
-          >
-        <div className="modal-background" onClick={closeModal} />
-        <div className="modal-card tournaments-modal-card">
-          <header className="modal-card-head">
-            <p id="tournaments-all-modal-title" className="modal-card-title">
-              Todos los torneos de BoisGang
-            </p>
-            <button
-              type="button"
-              className="delete"
-              aria-label="Cerrar"
-              onClick={closeModal}
-            />
-          </header>
-          <section className="modal-card-body">
-            {allLoading && <p className="has-text-grey-light">Cargando torneos...</p>}
-            {!allLoading && allError && (
-              <article className="message is-danger">
-                <div className="message-body">{allError}</div>
-              </article>
-            )}
-            {!allLoading && !allError && !allTournaments.length && (
-              <p className="has-text-grey-light">No hay torneos para mostrar.</p>
-            )}
-
-            {!allLoading && !allError && allTournaments.length > 0 && (
-              <div className="tournaments-list modal-tournaments-list">
-                {allTournaments.map((tournament) => (
-                  <article
-                    className="box tournament-list-item modal-tournament-item"
-                    key={tournament.id}
-                  >
-                    {upcomingIdSet.has(String(tournament.id)) ? (
-                      <span className="tournament-new-badge">NUEVO</span>
-                    ) : null}
-                    <div className="tournament-list-media">
-                      <img
-                        src={tournament.image}
-                        alt={`Vista previa de ${tournament.name}`}
-                        loading="lazy"
-                      />
-                    </div>
-                    <div className="tournament-list-content">
-                      <p className="title is-5 mb-2">{tournament.name}</p>
-                      <p className="is-size-7 has-text-grey-light">
-                        <strong>Fecha:</strong> {formatDate(tournament.startAt)} |{" "}
-                        <strong>Hora:</strong> {formatHour(tournament.startAt)}
-                      </p>
-                      <TournamentOrganizerLine organizerEmail={tournament.organizerEmail} />
-                      <TournamentGamesRow events={tournament.events} />
-                      <a
-                        className="button is-small is-light mt-3"
-                        href={tournament.url}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        Ver en start.gg
-                      </a>
-                    </div>
-                  </article>
-                ))}
-              </div>
-            )}
-          </section>
-          <footer className="modal-card-foot tournaments-modal-footer">
-            <div className="pagination-controls">
-              <button
-                type="button"
-                className="button is-small"
-                onClick={() => setAllPage((current) => Math.max(1, current - 1))}
-                disabled={allPage === 1 || allLoading}
-              >
-                Anterior
-              </button>
-              <span className="pagination-label">
-                Página {allPage} de {allTotalPages}
-              </span>
-              {allHasNextPage && (
-                <button
-                  type="button"
-                  className="button is-small is-link"
-                  onClick={() => setAllPage((current) => current + 1)}
-                  disabled={allLoading}
-                >
-                  Siguiente
-                </button>
-              )}
-            </div>
-          </footer>
-        </div>
-          </div>,
-          document.body
-        )}
     </section>
   );
 }
