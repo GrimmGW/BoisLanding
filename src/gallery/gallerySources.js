@@ -1,23 +1,25 @@
 /**
- * Preview WebP (imagetools) en tarjetas; original (?url) en el lightbox.
+ * Preview WebP (imagetools) en tarjetas.
+ * El original se importa sin query para que Vite sirva el archivo intacto;
+ * `?url` lo intercepta imagetools y lo recomprime.
  */
 import yukitoDantePrev from "../../assets/images/gallery-assets/yukito_dante_coconautic.JPG?w=720&format=webp&quality=76";
-import yukitoDanteOriginal from "../../assets/images/gallery-assets/yukito_dante_coconautic.JPG?url";
+import yukitoDanteOriginal from "../../assets/images/gallery-assets/yukito_dante_coconautic.JPG";
 
 import dareotPrev from "../../assets/images/gallery-assets/dareot_dexwe_cocoleague.JPG?w=720&format=webp&quality=76";
-import dareotOriginal from "../../assets/images/gallery-assets/dareot_dexwe_cocoleague.JPG?url";
+import dareotOriginal from "../../assets/images/gallery-assets/dareot_dexwe_cocoleague.JPG";
 
 import setsHubPrev from "../../assets/images/gallery-assets/sets_hub.jpg?w=720&format=webp&quality=76";
-import setsHubOriginal from "../../assets/images/gallery-assets/sets_hub.jpg?url";
+import setsHubOriginal from "../../assets/images/gallery-assets/sets_hub.jpg";
 
 import sets2HubPrev from "../../assets/images/gallery-assets/sets2_hub.jpg?w=720&format=webp&quality=76";
-import sets2HubOriginal from "../../assets/images/gallery-assets/sets2_hub.jpg?url";
+import sets2HubOriginal from "../../assets/images/gallery-assets/sets2_hub.jpg";
 
 import notochorkPrev from "../../assets/images/gallery-assets/notochork_yukito_coconautic.JPG?w=720&format=webp&quality=76";
-import notochorkOriginal from "../../assets/images/gallery-assets/notochork_yukito_coconautic.JPG?url";
+import notochorkOriginal from "../../assets/images/gallery-assets/notochork_yukito_coconautic.JPG";
 
 import winnersPrev from "../../assets/images/gallery-assets/winners_hubx.jpg?w=720&format=webp&quality=76";
-import winnersOriginal from "../../assets/images/gallery-assets/winners_hubx.jpg?url";
+import winnersOriginal from "../../assets/images/gallery-assets/winners_hubx.jpg";
 
 function imageSrc(mod) {
   if (typeof mod === "string") return mod;

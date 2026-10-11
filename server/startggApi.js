@@ -69,6 +69,13 @@ const TOURNAMENT_NODE_FIELDS = `
           name
           slug
           startAt
+          registrationClosesAt
+          numAttendees
+          venueName
+          venueAddress
+          city
+          lat
+          lng
           primaryContact
           primaryContactType
           bannerImages: images(type: "banner") {
@@ -76,6 +83,11 @@ const TOURNAMENT_NODE_FIELDS = `
           }
           thumbnailImages: images(type: "profile") {
             url
+          }
+          owner {
+            player {
+              gamerTag
+            }
           }
           events {
             id
@@ -88,22 +100,42 @@ const TOURNAMENT_NODE_FIELDS = `
           }
 `;
 
+function cleanText(value) {
+  return typeof value === "string" ? value.trim() : "";
+}
+
+function finiteCoord(value) {
+  if (value == null || value === "") return null;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
 function normalizeTournament(event) {
-  const banner = event.bannerImages?.[0]?.url;
-  const thumbnail = event.thumbnailImages?.[0]?.url;
+  const banner = event.bannerImages?.[0]?.url || "";
+  const logo = event.thumbnailImages?.[0]?.url || "";
   /** Solo contacto público del torneo: `owner.email` exige scope user.email en el token. */
-  const primaryRaw =
-    typeof event.primaryContact === "string" ? event.primaryContact.trim() : "";
+  const primaryRaw = cleanText(event.primaryContact);
   const email = primaryRaw.includes("@") ? primaryRaw : "";
+  const attendeeCount = Number(event.numAttendees);
 
   return {
     id: event.id,
     name: event.name,
     startAt: toISODate(event.startAt),
+    registrationClosesAt: toISODate(event.registrationClosesAt),
     url: event.slug ? `https://start.gg/${event.slug}` : "https://start.gg/",
     slug: event.slug || "",
-    image: banner || thumbnail || FALLBACK_IMAGE,
+    banner: banner || FALLBACK_IMAGE,
+    logo: logo || null,
+    image: banner || logo || FALLBACK_IMAGE,
     organizerEmail: email,
+    organizerName: cleanText(event.owner?.player?.gamerTag),
+    numAttendees: Number.isFinite(attendeeCount) ? attendeeCount : 0,
+    venueName: cleanText(event.venueName),
+    venueAddress: cleanText(event.venueAddress),
+    city: cleanText(event.city),
+    lat: finiteCoord(event.lat),
+    lng: finiteCoord(event.lng),
     events: listTournamentEvents(event.events)
   };
 }

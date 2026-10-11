@@ -28,21 +28,27 @@ const LB_SWIPE_THRESHOLD = 56;
 
 /** Evita flashes al cambiar de foto: misma URL solo decodifica una vez (caché entre aperturas). */
 const galleryFullDecodeCache = new Map();
+const galleryFullDecoded = new Set();
 
 function ensureGalleryFullDecoded(src) {
   const existing = galleryFullDecodeCache.get(src);
   if (existing) return existing;
   const promise = (async () => {
-    const img = new Image();
-    img.src = src;
-    if (typeof img.decode === "function") {
-      await img.decode().catch(() => {});
-    } else {
-      await new Promise((resolve, reject) => {
-        img.onload = () => resolve();
-        img.onerror = () => reject(new Error("load"));
-      }).catch(() => {});
+    try {
+      const img = new Image();
+      img.src = src;
+      if (typeof img.decode === "function") {
+        await img.decode();
+      } else {
+        await new Promise((resolve, reject) => {
+          img.onload = () => resolve();
+          img.onerror = () => reject(new Error("load"));
+        });
+      }
+    } catch {
+      /* Si falla la decodificación, igual mostramos el <img>. */
     }
+    galleryFullDecoded.add(src);
   })();
   galleryFullDecodeCache.set(src, promise);
   return promise;
@@ -53,6 +59,7 @@ function GallerySection() {
   const [lightboxClosing, setLightboxClosing] = useState(false);
   const [lbEnterDir, setLbEnterDir] = useState("idle");
   const [lbDragX, setLbDragX] = useState(0);
+  const [lbFullReady, setLbFullReady] = useState(false);
   const lbTouchStartX = useRef(0);
   const lbIndexRef = useRef(null);
   const carouselRef = useRef(null);
@@ -75,19 +82,33 @@ function GallerySection() {
     lbIndexRef.current = lightboxIndex;
   }, [lightboxIndex]);
 
-  /** Precarga y decodifica todas las full al estar en lightbox (actual primero). */
+  /** Muestra la original solo cuando ya está decodificada; precarga el resto después. */
   useEffect(() => {
-    if (lightboxIndex === null) return undefined;
+    if (lightboxIndex === null) {
+      setLbFullReady(false);
+      return undefined;
+    }
+
     const ordered = [...GALLERY_ITEMS];
     const [current] = ordered.splice(lightboxIndex, 1);
-    const queue = [current, ...ordered];
+    const src = current.originalSrc;
     let cancelled = false;
+
+    if (galleryFullDecoded.has(src)) {
+      setLbFullReady(true);
+    } else {
+      setLbFullReady(false);
+    }
+
     (async () => {
-      for (const item of queue) {
+      await ensureGalleryFullDecoded(src);
+      if (!cancelled) setLbFullReady(true);
+      for (const item of ordered) {
         if (cancelled) return;
         await ensureGalleryFullDecoded(item.originalSrc);
       }
     })();
+
     return () => {
       cancelled = true;
     };
@@ -341,22 +362,26 @@ function GallerySection() {
               >
                 ›
               </button>
-              <img
-                key={lightboxIndex}
-                src={activeItem.originalSrc}
-                alt={activeItem.alt}
-                className={`gallery-lightbox-image gallery-lightbox-image--enter-${lbEnterDir}${
-                  lbDragX !== 0 ? " is-dragging" : ""
-                }`}
-                style={
-                  lbDragX !== 0
-                    ? { transform: `translate3d(${lbDragX}px,0,0)` }
-                    : undefined
-                }
-                draggable={false}
-                decoding="async"
-                fetchPriority="high"
-              />
+              {lbFullReady ? (
+                <img
+                  key={lightboxIndex}
+                  src={activeItem.originalSrc}
+                  alt={activeItem.alt}
+                  className={`gallery-lightbox-image gallery-lightbox-image--enter-${lbEnterDir}${
+                    lbDragX !== 0 ? " is-dragging" : ""
+                  }`}
+                  style={
+                    lbDragX !== 0
+                      ? { transform: `translate3d(${lbDragX}px,0,0)` }
+                      : undefined
+                  }
+                  draggable={false}
+                  decoding="sync"
+                  fetchPriority="high"
+                />
+              ) : (
+                <div className="gallery-lightbox-skeleton" role="status" aria-label="Cargando foto" />
+              )}
             </div>
           </div>
         </div>
