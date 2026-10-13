@@ -1,5 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBell } from "@fortawesome/free-solid-svg-icons";
+import { faBell as faBellOutline } from "@fortawesome/free-regular-svg-icons";
 import boisLogo from "../../assets/images/BoisLogotipo.png";
+import { useNotifications } from "../notifications/NotificationsContext.jsx";
 
 const LINKS = [
   { href: "#torneos", label: "Torneos" },
@@ -8,6 +12,23 @@ const LINKS = [
 ];
 
 const CLOSE_MS = 300;
+
+function NotificationBell() {
+  const { support, subscribed, openPrompt } = useNotifications();
+  if (support === "unsupported") return null;
+
+  return (
+    <button
+      type="button"
+      className={`bois-nav-bell${subscribed ? " bois-nav-bell--on" : ""}`}
+      onClick={openPrompt}
+      aria-label={subscribed ? "Notificaciones activadas" : "Activar notificaciones"}
+      title={subscribed ? "Notificaciones activadas" : "Activar notificaciones"}
+    >
+      <FontAwesomeIcon icon={subscribed ? faBell : faBellOutline} />
+    </button>
+  );
+}
 
 function HeroNavbar() {
   const [mounted, setMounted] = useState(false);
@@ -64,6 +85,7 @@ function HeroNavbar() {
                   {label}
                 </a>
               ))}
+              <NotificationBell />
               <a className="bois-nav-contact" href="#contacto">
                 Contacto
               </a>
@@ -71,7 +93,9 @@ function HeroNavbar() {
           </div>
 
           <div className="bois-nav-mobile-bar">
-            <span className="bois-nav-mobile-spacer" aria-hidden />
+            <span className="bois-nav-mobile-spacer">
+              <NotificationBell />
+            </span>
             <a
               className="bois-nav-logo-wrap bois-nav-logo-center"
               href="#inicio"
