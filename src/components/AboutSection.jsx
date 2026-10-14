@@ -98,7 +98,7 @@ function AboutSection() {
               </div>
               <div className="about-metric-item">
                 <p className="about-metric-value">
-                  {loadingStats ? "..." : `${stats.instagramFollowersRounded}+`}
+                  {loadingStats ? "..." : "+" + stats.instagramFollowersRounded}
                 </p>
                 <p className="about-metric-label">
                   Seguidores en redes
