@@ -138,7 +138,7 @@ export function NotificationsProvider({ children }) {
       setSubscribed(true);
       setPromptOpen(false);
     } catch {
-      setError("No pudimos activar las notificaciones. Inténtalo de nuevo en un momento.");
+      setError("No pudimos activar las notificaciones, inténtalo de nuevo en un momento. Si usas Brave, puede que las notificaciones no funcionen.");
     } finally {
       setBusy(false);
     }

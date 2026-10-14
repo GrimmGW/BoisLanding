@@ -9,28 +9,28 @@ const CLOSE_MS = 260;
 function promptCopy({ support, permission, subscribed }) {
   if (support === "ios-install") {
     return {
-      title: "Instala BoisGang en tu iPhone",
-      body: "En iPhone las notificaciones solo funcionan con la página instalada. Toca Compartir, elige \"Agregar a pantalla de inicio\" y luego abre BoisGang desde el ícono para activarlas.",
+      title: "Instala nuestra página",
+      body: "En iPhone, las notificaciones solo funcionan con la página instalada. Toca Compartir, elige \"Agregar a pantalla de inicio\" y luego abre BoisGang desde el ícono para activarlas.",
       mode: "info",
     };
   }
   if (subscribed) {
     return {
       title: "Notificaciones activadas",
-      body: "Te avisaremos cuando haya un nuevo torneo en Nueva Esparta y cuando falte una semana para que empiece.",
+      body: "Tranqui, cuando haya un nuevo torneo te lo haremos saber.",
       mode: "subscribed",
     };
   }
   if (permission === "denied") {
     return {
       title: "Notificaciones bloqueadas",
-      body: "Tu navegador bloqueó las notificaciones de esta página. Toca el candado junto a la dirección, permite las notificaciones y recarga la página.",
+      body: "Tu navegador bloqueó las notificaciones de esta página. Toca el candado junto a la URL, permite las notificaciones y recarga la página.",
       mode: "info",
     };
   }
   return {
     title: "¿Te avisamos de los próximos torneos?",
-    body: "Activa las notificaciones y te avisaremos cuando haya un nuevo torneo en Nueva Esparta y cuando falte una semana para que empiece.",
+    body: "Activa las notificaciones para que no te pierdas de ningún torneo en Margarita.",
     mode: "ask",
   };
 }
