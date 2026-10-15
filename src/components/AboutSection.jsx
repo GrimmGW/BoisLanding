@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
+import FramedImage from "./FramedImage.jsx";
 import galMain from "../../assets/images/about/gal0.JPG";
 import galTop from "../../assets/images/about/gal1.JPG";
 import galBottom from "../../assets/images/about/gal2.JPG";
 
 function AboutSection() {
   const [stats, setStats] = useState({
-    organizedTournamentsCount: null,
-    instagramFollowersRounded: null,
-    instagramFollowersSource: "fallback"
+    organizedTournamentsCount: null
   });
   const [loadingStats, setLoadingStats] = useState(true);
 
@@ -22,17 +21,14 @@ function AboutSection() {
 
         if (mounted && response.ok) {
           setStats({
-            organizedTournamentsCount: payload.organizedTournamentsCount ?? 0,
-            instagramFollowersRounded: payload.instagramFollowersRounded ?? 700,
-            instagramFollowersSource: payload.instagramFollowersSource || "fallback"
+            organizedTournamentsCount: payload.organizedTournamentsCount ?? 0
           });
         }
       } catch (_error) {
         if (mounted) {
           setStats((current) => ({
             ...current,
-            organizedTournamentsCount: current.organizedTournamentsCount ?? 0,
-            instagramFollowersRounded: current.instagramFollowersRounded ?? 700
+            organizedTournamentsCount: current.organizedTournamentsCount ?? 0
           }));
         }
       } finally {
@@ -92,18 +88,17 @@ function AboutSection() {
             <div className="about-metrics">
               <div className="about-metric-item">
                 <p className="about-metric-value">
-                  {loadingStats ? "..." : stats.organizedTournamentsCount}
+                  {loadingStats ? (
+                    <span className="about-metric-skeleton" role="status" aria-label="Cargando torneos realizados" />
+                  ) : (
+                    stats.organizedTournamentsCount
+                  )}
                 </p>
                 <p className="about-metric-label">Torneos realizados</p>
               </div>
               <div className="about-metric-item">
-                <p className="about-metric-value">
-                  {loadingStats ? "..." : `${stats.instagramFollowersRounded}+`}
-                </p>
-                <p className="about-metric-label">
-                  Seguidores en redes
-                  {stats.instagramFollowersSource === "fallback" ? " (estimado)" : ""}
-                </p>
+                <p className="about-metric-value">+800</p>
+                <p className="about-metric-label">Seguidores en Instagram</p>
               </div>
               <div className="about-metric-item">
                 <p className="about-metric-value">100%</p>
@@ -115,25 +110,13 @@ function AboutSection() {
           <div className="column is-6-desktop">
             <div className="about-collage">
               <div className="about-card about-card-main">
-                <img
-                  src={galMain}
-                  alt="Eventos BoisGang"
-                  loading="lazy"
-                />
+                <FramedImage src={galMain} alt="Eventos BoisGang" loading="lazy" />
               </div>
               <div className="about-card about-card-top">
-                <img
-                  src={galTop}
-                  alt="Torneo platform fighters"
-                  loading="lazy"
-                />
+                <FramedImage src={galTop} alt="Torneo platform fighters" loading="lazy" />
               </div>
               <div className="about-card about-card-bottom">
-                <img
-                  src={galBottom}
-                  alt="Comunidad BoisGang"
-                  loading="lazy"
-                />
+                <FramedImage src={galBottom} alt="Comunidad BoisGang" loading="lazy" />
               </div>
             </div>
           </div>

@@ -1,7 +1,7 @@
 /**
  * Handlers compartidos: Express (dev) y Vercel serverless (prod).
  * Variables de entorno: STARTGG_API_TOKEN, STARTGG_OWNER_ID, STARTGG_REGION_COORDINATES,
- * STARTGG_REGION_RADIUS, INSTAGRAM_HANDLE, INSTAGRAM_FOLLOWERS_FALLBACK
+ * STARTGG_REGION_RADIUS
  */
 
 import { sendJson } from "./httpJson.js";
@@ -33,15 +33,6 @@ function envRegionRadius() {
     }
   }
   return raw || "40.2km";
-}
-
-function envInstagramHandle() {
-  return (process.env.INSTAGRAM_HANDLE || "_boisgang").replace("@", "");
-}
-
-function envInstagramFallback() {
-  const n = Number.parseInt(process.env.INSTAGRAM_FOLLOWERS_FALLBACK || "750", 10);
-  return Number.isNaN(n) ? 750 : n;
 }
 
 const FALLBACK_IMAGE =
@@ -158,64 +149,6 @@ function parsePaging(value, fallback) {
   const parsed = Number.parseInt(String(value), 10);
   if (Number.isNaN(parsed)) return fallback;
   return parsed;
-}
-
-function roundDownHundreds(value) {
-  return Math.floor(value / 100) * 100;
-}
-
-function parseInstagramFollowers(text) {
-  const countRegexes = [
-    /"edge_followed_by"\s*:\s*\{"count"\s*:\s*(\d+)/,
-    /"followers"\s*:\s*([0-9]+)/,
-    /"follower_count"\s*:\s*([0-9]+)/
-  ];
-
-  for (const regex of countRegexes) {
-    const match = text.match(regex);
-    if (match?.[1]) {
-      const parsed = Number.parseInt(match[1], 10);
-      if (!Number.isNaN(parsed)) {
-        return parsed;
-      }
-    }
-  }
-
-  return null;
-}
-
-async function getInstagramFollowers() {
-  const fallbackValue = envInstagramFallback();
-
-  try {
-    const response = await fetch(`https://www.instagram.com/${envInstagramHandle()}/`, {
-      headers: {
-        "User-Agent":
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
-      }
-    });
-
-    if (!response.ok) {
-      throw new Error("Instagram profile request failed");
-    }
-
-    const page = await response.text();
-    const followers = parseInstagramFollowers(page);
-
-    if (!followers) {
-      throw new Error("Unable to parse followers");
-    }
-
-    return {
-      instagramFollowersRounded: roundDownHundreds(followers),
-      instagramFollowersSource: "live"
-    };
-  } catch (_error) {
-    return {
-      instagramFollowersRounded: roundDownHundreds(fallbackValue),
-      instagramFollowersSource: "fallback"
-    };
-  }
 }
 
 async function fetchOwnerTournaments({ page, perPage, upcomingOnly }) {
@@ -466,12 +399,8 @@ export async function handleAboutStats(req, res) {
       perPage: 1,
       upcomingOnly: false
     });
-    const instagramPayload = await getInstagramFollowers();
-
     sendJson(res, 200, {
-      organizedTournamentsCount: tournamentsPayload.pagination.total ?? 0,
-      instagramFollowersRounded: instagramPayload.instagramFollowersRounded,
-      instagramFollowersSource: instagramPayload.instagramFollowersSource
+      organizedTournamentsCount: tournamentsPayload.pagination.total ?? 0
     });
   } catch (error) {
     sendJson(res, 502, { error: error.message });

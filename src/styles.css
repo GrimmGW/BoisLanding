@@ -22,6 +22,25 @@ body,
   font-family: "Outfit", sans-serif;
 }
 
+img {
+  box-shadow: none;
+}
+
+img.is-pending {
+  opacity: 0;
+}
+
+.media-skeleton {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(100deg, #1c1c22 20%, #34343e 45%, #1c1c22 70%);
+  background-size: 200% 100%;
+  animation: gallerySkeleton 1.15s ease-in-out infinite;
+}
+
 .bois-hero {
   position: relative;
   overflow: hidden;
@@ -841,8 +860,9 @@ body,
   background: #ffffff;
 }
 
+#torneos,
 .about-section {
-  background: #0c0c10;
+  background: #000000;
 }
 
 .about-title {
@@ -909,6 +929,17 @@ body,
   margin-bottom: 0.2rem;
 }
 
+.about-metric-skeleton {
+  display: inline-block;
+  width: 2.6rem;
+  height: 1.35rem;
+  border-radius: 999px;
+  vertical-align: middle;
+  background: linear-gradient(100deg, #1c1c22 20%, #34343e 45%, #1c1c22 70%);
+  background-size: 200% 100%;
+  animation: gallerySkeleton 1.15s ease-in-out infinite;
+}
+
 .about-metric-label {
   color: #b9b9c5;
   font-size: 0.9rem;
@@ -920,10 +951,11 @@ body,
 }
 
 .about-card {
+  position: relative;
   border-radius: 20px;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.35);
+  border: none;
+  box-shadow: none;
 }
 
 .about-card img {
@@ -956,6 +988,45 @@ body,
   height: 180px;
 }
 
+.about-card-main,
+.about-card-top,
+.about-card-bottom {
+  animation: aboutFloat 6s ease-in-out infinite;
+}
+
+.about-card-main {
+  animation-duration: 6.4s;
+}
+
+.about-card-top {
+  animation-duration: 5.2s;
+  animation-delay: -1.8s;
+}
+
+.about-card-bottom {
+  animation-duration: 7.1s;
+  animation-delay: -3.4s;
+}
+
+@keyframes aboutFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .about-card-main,
+  .about-card-top,
+  .about-card-bottom {
+    animation: none;
+  }
+}
+
 .tournaments-grid {
   display: flex;
   flex-wrap: wrap;
@@ -974,10 +1045,10 @@ body,
   max-width: 420px;
   min-width: 0;
   padding: var(--tournament-card-pad);
-  background: #1c1c1f;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: #0D0D0D;
+  border: none;
   border-radius: 28px;
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.4);
+  box-shadow: none;
   overflow: visible;
   color: #fff;
 }
@@ -1015,7 +1086,7 @@ body,
   display: grid;
   place-items: center;
   border-radius: 50%;
-  border: 4px solid #1c1c1f;
+  border: 4px solid #141416;
   background: #2c2c32;
   overflow: hidden;
   color: #fff;
@@ -1237,6 +1308,79 @@ body,
   .tournaments-grid {
     flex-direction: column;
     align-items: center;
+  }
+
+  .tournament-card-skeleton:nth-child(n + 4) {
+    display: none;
+  }
+}
+
+.tournament-card-skeleton {
+  pointer-events: none;
+}
+
+.tournament-skeleton-block {
+  background: linear-gradient(100deg, #1c1c22 20%, #34343e 45%, #1c1c22 70%);
+  background-size: 200% 100%;
+  animation: tournamentSkeleton 1.15s ease-in-out infinite;
+}
+
+.tournament-skeleton-banner {
+  height: 118px;
+  border-radius: 18px;
+}
+
+.tournament-skeleton-logo {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  border: 4px solid #141416;
+}
+
+.tournament-skeleton-line {
+  height: 0.95rem;
+  border-radius: 999px;
+}
+
+.tournament-skeleton-line--name {
+  width: 72%;
+}
+
+.tournament-skeleton-line--organizer {
+  width: 46%;
+  margin-top: 0.45rem;
+}
+
+.tournament-skeleton-map {
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  border-radius: 50%;
+}
+
+.tournament-skeleton-stats {
+  height: 4.4rem;
+  border-radius: 16px;
+}
+
+.tournament-skeleton-cta {
+  height: 2.75rem;
+  border-radius: 999px;
+}
+
+@keyframes tournamentSkeleton {
+  from {
+    background-position: 100% 0;
+  }
+
+  to {
+    background-position: -100% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tournament-skeleton-block {
+    animation: none;
   }
 }
 
@@ -1617,7 +1761,7 @@ html.bois-scroll-locked body {
 
 /* —— Gallery (bento desktop / carousel móvil) —— */
 .gallery-section {
-  background: #0c0c10;
+  background: #000000;
 }
 
 .gallery-section-title {
@@ -1679,8 +1823,8 @@ html.bois-scroll-locked body {
   overflow: hidden;
   text-align: left;
   background: #111115;
-  border: 1px solid rgba(179, 101, 255, 0.22);
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.4);
+  border: none;
+  box-shadow: none;
 }
 
 .gallery-card:focus-visible {
@@ -1691,6 +1835,7 @@ html.bois-scroll-locked body {
 .gallery-card-image {
   position: absolute;
   inset: 0;
+  z-index: 1;
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -1702,7 +1847,7 @@ html.bois-scroll-locked body {
   left: 0;
   right: 0;
   top: 0;
-  z-index: 1;
+  z-index: 2;
   padding: 1rem 1.15rem 2rem;
   background: linear-gradient(
     180deg,
@@ -1905,8 +2050,9 @@ html.bois-scroll-locked body {
   touch-action: none;
   background: rgba(10, 10, 14, 0.6);
   border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: none;
   overflow: hidden;
+  min-height: min(70vh, 720px);
 }
 
 .gallery-lightbox-frame .gallery-lightbox-frame-nav {
@@ -1914,10 +2060,11 @@ html.bois-scroll-locked body {
 }
 
 .gallery-lightbox-skeleton {
-  width: 100%;
-  height: min(70vh, 720px);
-  border-radius: 12px;
-  background: linear-gradient(100deg, #16161c 20%, #2c2c36 45%, #16161c 70%);
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  background: linear-gradient(100deg, #1c1c22 20%, #34343e 45%, #1c1c22 70%);
   background-size: 200% 100%;
   animation: gallerySkeleton 1.15s ease-in-out infinite;
 }
@@ -1939,7 +2086,7 @@ html.bois-scroll-locked body {
   height: min(70vh, 720px);
   min-height: 0;
   max-height: min(70vh, 720px);
-  object-fit: contain;
+  object-fit: cover;
   object-position: center;
 }
 
@@ -2096,7 +2243,9 @@ html.bois-scroll-locked body {
   .gallery-lightbox-image--enter-idle,
   .gallery-lightbox-image--enter-next,
   .gallery-lightbox-image--enter-prev,
-  .gallery-lightbox-skeleton {
+  .gallery-lightbox-skeleton,
+  .media-skeleton,
+  .about-metric-skeleton {
     animation: none !important;
   }
 }
@@ -2118,12 +2267,11 @@ html.bois-scroll-locked body {
 }
 
 .contact-section {
-  background: #09090d;
+  background: #000000;
 }
 
 .contact-shell {
-  background: #121218;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #0D0D0D;
   border-radius: 20px;
   padding: 2.25rem;
 }
@@ -2185,7 +2333,7 @@ html.bois-scroll-locked body {
 }
 
 .contact-form-card {
-  background: #17171f;
+  background: #0D0D0D;
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 18px;
   padding: 1.25rem;
@@ -2198,7 +2346,7 @@ html.bois-scroll-locked body {
 
 .contact-form-card .input,
 .contact-form-card .textarea {
-  background: #0f0f14;
+  background: #0D0D0D;
   border-color: rgba(255, 255, 255, 0.14);
   color: #f7f7fc;
 }
@@ -2223,7 +2371,7 @@ html.bois-scroll-locked body {
 .bois-footer {
   /* Cambia solo este valor para agrandar o achicar el logo Bois (p. ej. 160px o 240px). */
   --footer-brand-logo-max: 200px;
-  background: #09090d;
+  background: #000000;
   padding-top: 2rem;
   padding-bottom: 2rem;
 }
