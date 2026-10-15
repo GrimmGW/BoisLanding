@@ -28,7 +28,7 @@ function ContactSection() {
         <div className="contact-shell">
           <div className="columns is-variable is-6 is-vcentered">
             <div className="column is-5-desktop">
-              <p className="contact-kicker">Estamos para ayudarte</p>
+              <p className="contact-kicker">¿Tienes preguntas?</p>
               <h2 className="title is-2 contact-title">Contáctanos</h2>
               <p className="contact-copy">
                 Nos puedes contactar a través de WhatsApp o nuestro correo para resolver dudas,

@@ -2,7 +2,9 @@ import webpush from "npm:web-push@3.6.7";
 import { fetchRegionalTournaments, type WatchedTournament } from "../_shared/startgg.ts";
 import { supabaseAdmin } from "../_shared/supabaseAdmin.ts";
 
-const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
+const DAY_MS = 24 * 60 * 60 * 1000;
+const THREE_DAY_MS = 3 * DAY_MS;
+const WEEK_MS = 7 * DAY_MS;
 const SITE_ICON = "/icons/icon-192.png";
 
 type SeenRow = {
@@ -12,6 +14,9 @@ type SeenRow = {
   url: string | null;
   notified_new: boolean;
   notified_window: boolean;
+  notified_three: boolean;
+  notified_day: boolean;
+  registration_closes_at: string | null;
 };
 
 type PushPayload = {
@@ -45,10 +50,10 @@ function formatDate(iso: string | null): string {
   }).format(new Date(iso));
 }
 
-function inNotificationWindow(iso: string | null, now: number): boolean {
-  if (!iso) return false;
+function timeUntilStart(iso: string | null, now: number): number | null {
+  if (!iso) return null;
   const diff = new Date(iso).getTime() - now;
-  return diff > 0 && diff <= WEEK_MS;
+  return diff > 0 ? diff : null;
 }
 
 function sameInstant(a: string | null, b: string | null): boolean {
@@ -68,11 +73,39 @@ function newTournamentPayload(t: WatchedTournament): PushPayload {
 
 function windowPayload(t: WatchedTournament): PushPayload {
   return {
-    title: `Falta una semana: ${t.name}`,
-    body: `Es el ${formatDate(t.startAt)}. ¡Nos vemos en brackets!`,
+    title: `Cierra en una semana: ${t.name}`,
+    body: `Quedan 7 días para cerrar inscripciones. Cierran el ${formatDate(t.registrationClosesAt)}.`,
     url: t.url,
     tag: `torneo-${t.id}-window`,
     image: t.image,
+  };
+}
+
+function threeDayPayload(t: WatchedTournament): PushPayload {
+  return {
+    title: `Quedan 3 días: ${t.name}`,
+    body: `Quedan 3 días para cerrar inscripciones. Cierran el ${formatDate(t.registrationClosesAt)}.`,
+    url: t.url,
+    tag: `torneo-${t.id}-3d`,
+    image: t.image,
+  };
+}
+
+function tomorrowPayload(t: WatchedTournament): PushPayload {
+  return {
+    title: `Mañana cierran inscripciones: ${t.name}`,
+    body: `Mañana, ${formatDate(t.registrationClosesAt)}, cierran las inscripciones.`,
+    url: t.url,
+    tag: `torneo-${t.id}-1d`,
+    image: t.image,
+  };
+}
+
+function reminderFlags(diff: number | null) {
+  return {
+    notified_window: diff !== null && diff <= WEEK_MS,
+    notified_three: diff !== null && diff <= THREE_DAY_MS,
+    notified_day: diff !== null && diff <= DAY_MS,
   };
 }
 
@@ -163,8 +196,11 @@ Deno.serve(async (req) => {
 
   for (const t of tournaments) {
     const row = seen.get(t.id);
-    // Paso 3. Evaluar las fechas
-    const inWindow = inNotificationWindow(t.startAt, now);
+    // Paso 3. Los avisos de 7, 3 y 1 día se miden contra el cierre de inscripciones.
+    const diff = timeUntilStart(t.registrationClosesAt, now);
+    const inWeek = diff !== null && diff > THREE_DAY_MS && diff <= WEEK_MS;
+    const inThree = diff !== null && diff > DAY_MS && diff <= THREE_DAY_MS;
+    const inDay = diff !== null && diff <= DAY_MS;
 
     if (!row) {
       upserts.push({
@@ -173,27 +209,51 @@ Deno.serve(async (req) => {
         start_at: t.startAt,
         url: t.url,
         notified_new: true,
-        notified_window: inWindow,
+        registration_closes_at: t.registrationClosesAt,
+        ...reminderFlags(diff),
       });
       if (!baseline) payloads.push(newTournamentPayload(t));
       continue;
     }
 
-    const startChanged = !sameInstant(row.start_at, t.startAt);
-    let notifiedWindow = startChanged ? false : row.notified_window;
-    if (inWindow && !notifiedWindow) {
+    const registrationChanged = !sameInstant(row.registration_closes_at, t.registrationClosesAt);
+    let notifiedWindow = registrationChanged ? false : Boolean(row.notified_window);
+    let notifiedThree = registrationChanged ? false : Boolean(row.notified_three);
+    let notifiedDay = registrationChanged ? false : Boolean(row.notified_day);
+
+    if (inDay) {
+      if (!notifiedDay) payloads.push(tomorrowPayload(t));
+      notifiedDay = true;
+      notifiedThree = true;
+      notifiedWindow = true;
+    } else if (inThree) {
+      if (!notifiedThree) payloads.push(threeDayPayload(t));
+      notifiedThree = true;
+      notifiedWindow = true;
+    } else if (inWeek && !notifiedWindow) {
       notifiedWindow = true;
       payloads.push(windowPayload(t));
     }
 
-    if (startChanged || notifiedWindow !== row.notified_window || row.name !== t.name || row.url !== t.url) {
+    if (
+      registrationChanged ||
+      !sameInstant(row.start_at, t.startAt) ||
+      notifiedWindow !== row.notified_window ||
+      notifiedThree !== row.notified_three ||
+      notifiedDay !== row.notified_day ||
+      row.name !== t.name ||
+      row.url !== t.url
+    ) {
       upserts.push({
         id: t.id,
         name: t.name,
         start_at: t.startAt,
         url: t.url,
         notified_new: true,
+        registration_closes_at: t.registrationClosesAt,
         notified_window: notifiedWindow,
+        notified_three: notifiedThree,
+        notified_day: notifiedDay,
       });
     }
   }

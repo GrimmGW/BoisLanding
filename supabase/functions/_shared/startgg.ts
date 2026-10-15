@@ -4,6 +4,7 @@ export type WatchedTournament = {
   id: string;
   name: string;
   startAt: string | null;
+  registrationClosesAt: string | null;
   url: string;
   image: string | null;
 };
@@ -37,6 +38,7 @@ const REGIONAL_QUERY = `
         name
         slug
         startAt
+        registrationClosesAt
         bannerImages: images(type: "banner") { url }
         thumbnailImages: images(type: "profile") { url }
       }
@@ -49,6 +51,7 @@ type RawNode = {
   name: string;
   slug?: string | null;
   startAt?: number | null;
+  registrationClosesAt?: number | null;
   bannerImages?: { url: string }[] | null;
   thumbnailImages?: { url: string }[] | null;
 };
@@ -79,6 +82,9 @@ export async function fetchRegionalTournaments(perPage = 30): Promise<WatchedTou
     id: String(node.id),
     name: node.name,
     startAt: node.startAt ? new Date(node.startAt * 1000).toISOString() : null,
+    registrationClosesAt: node.registrationClosesAt
+      ? new Date(node.registrationClosesAt * 1000).toISOString()
+      : null,
     url: node.slug ? `https://start.gg/${node.slug}` : "https://start.gg/",
     image: node.thumbnailImages?.[0]?.url || node.bannerImages?.[0]?.url || null,
   }));

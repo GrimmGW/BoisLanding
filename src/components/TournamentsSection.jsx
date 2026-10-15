@@ -18,6 +18,32 @@ async function parseJsonResponse(response) {
   }
 }
 
+function TournamentSkeletons() {
+  return (
+    <div className="tournaments-grid" role="status" aria-busy="true" aria-label="Cargando torneos">
+      {Array.from({ length: 6 }, (_, index) => (
+        <article className="tournament-card tournament-card-skeleton" key={index} aria-hidden="true">
+          <div className="tournament-skeleton-block tournament-skeleton-banner" />
+          <div className="tournament-card-overlap">
+            <div className="tournament-skeleton-block tournament-skeleton-logo" />
+          </div>
+          <div className="tournament-card-body">
+            <div className="tournament-card-identity">
+              <div className="tournament-card-titles">
+                <div className="tournament-skeleton-block tournament-skeleton-line tournament-skeleton-line--name" />
+                <div className="tournament-skeleton-block tournament-skeleton-line tournament-skeleton-line--organizer" />
+              </div>
+              <div className="tournament-skeleton-block tournament-skeleton-map" />
+            </div>
+            <div className="tournament-skeleton-block tournament-skeleton-stats" />
+            <div className="tournament-skeleton-block tournament-skeleton-cta" />
+          </div>
+        </article>
+      ))}
+    </div>
+  );
+}
+
 function TournamentsSection() {
   const [tournaments, setTournaments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -90,7 +116,7 @@ function TournamentsSection() {
 
   const content = useMemo(() => {
     if (loading) {
-      return <p className="has-text-grey">Cargando torneos...</p>;
+      return <TournamentSkeletons />;
     }
 
     if (error) {

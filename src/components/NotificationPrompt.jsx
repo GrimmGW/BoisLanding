@@ -79,10 +79,6 @@ function NotificationPrompt() {
         aria-describedby="bois-notify-body"
         onClick={(e) => e.stopPropagation()}
       >
-        <button type="button" className="bois-notify-close" onClick={closePrompt} aria-label="Cerrar">
-          <i className="fi fi-br-cross" aria-hidden />
-        </button>
-
         <span className="bois-notify-icon" aria-hidden>
           <FontAwesomeIcon icon={subscribed ? faBell : faBellOutline} />
         </span>

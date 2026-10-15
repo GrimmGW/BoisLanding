@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { GALLERY_ITEMS } from "../gallery/gallerySources";
+import FramedImage from "./FramedImage.jsx";
 
 /** Orden coincide con celdas del bento: A(2x2) B C / D E F(2x2) */
 const BENTO_CELLS = ["a", "b", "c", "d", "e", "f"];
@@ -9,7 +10,7 @@ const LIGHTBOX_CLOSE_MS = 280;
 function GalleryCardContent({ item }) {
   return (
     <>
-      <img
+      <FramedImage
         className="gallery-card-image"
         src={item.previewSrc}
         alt={item.alt}
