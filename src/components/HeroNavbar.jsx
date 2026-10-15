@@ -86,8 +86,9 @@ function HeroNavbar() {
                 </a>
               ))}
               <NotificationBell />
-              <a className="bois-nav-contact" href="#contacto">
-                Contacto
+              <a className="bois-verify-button" href="#contacto">
+                <span className="bois-verify-button-surface" aria-hidden="true" />
+                <span className="bois-verify-button-label"><span>Contacto</span></span>
               </a>
             </div>
           </div>
@@ -148,11 +149,12 @@ function HeroNavbar() {
                 </a>
               ))}
               <a
-                className="bois-nav-contact"
+                className="bois-verify-button"
                 href="#contacto"
                 onClick={requestClose}
               >
-                Contacto
+                <span className="bois-verify-button-surface" aria-hidden="true" />
+                <span className="bois-verify-button-label"><span>Contacto</span></span>
               </a>
             </nav>
           </aside>

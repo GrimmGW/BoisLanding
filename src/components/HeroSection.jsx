@@ -17,8 +17,9 @@ function HeroSection() {
               </p>
 
               <div className="bois-hero-actions mt-5">
-                <a className="button is-medium has-text-weight-bold bois-hero-primary-button" href="#torneos">
-                  Ver próximos torneos
+                <a className="bois-verify-button bois-hero-primary-button" href="#torneos">
+                  <span className="bois-verify-button-surface" aria-hidden="true" />
+                  <span className="bois-verify-button-label"><span>Ver próximos torneos</span></span>
                 </a>
 
                 <div className="bois-hero-icon-buttons" aria-label="Redes sociales">

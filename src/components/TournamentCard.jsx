@@ -145,8 +145,19 @@ function TournamentCard({ tournament }) {
             <p className="tournament-card-stat-value">{attendees}</p>
           </div>
         </div>
-        <a className="tournament-card-cta" href={tournament.url} target="_blank" rel="noreferrer">
-          Ver en start.gg
+        <a className="bois-verify-button tournament-card-cta" href={tournament.url} target="_blank" rel="noreferrer">
+          <span className="bois-verify-button-surface" aria-hidden="true" />
+          <span className="bois-verify-button-label">
+            <span>
+              <svg className="tournament-card-cta-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  fill="currentColor"
+                  d="M6 0A5.999 5.999 0 00.002 6v5.252a.75.75 0 00.75.748H5.25a.748.748 0 00.75-.747V6.749C6 6.334 6.336 6 6.748 6h16.497a.748.748 0 00.749-.748V.749A.743.743 0 0023.247 0zm12.75 12a.748.748 0 00-.75.75v4.5a.748.748 0 01-.747.748H.753a.754.754 0 00-.75.751v4.5a.75.75 0 00.75.751H18a5.999 5.999 0 005.999-6v-5.25a.75.75 0 00-.75-.75z"
+                />
+              </svg>
+              Ver en start.gg
+            </span>
+          </span>
         </a>
       </div>
     </article>

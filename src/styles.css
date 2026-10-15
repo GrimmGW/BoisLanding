@@ -198,29 +198,129 @@ img.is-pending {
   outline: none;
 }
 
-/* Pill “Contacto” con borde degradado morado */
-.bois-nav-contact {
+/* Contacto: botón blanco rectangular, hover Verify (Codrops Telesto) */
+.bois-verify-button {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   padding: 0.45rem 1.35rem;
-  border-radius: 999px;
+  border-radius: 10px;
+  border: none;
+  outline: none;
+  background: #ffffff;
+  color: #141416 !important;
   font-weight: 700;
   font-size: 0.92rem;
+  line-height: 1.2;
   text-decoration: none;
-  color: #e8d4ff !important;
-  border: 2px solid transparent;
-  background:
-    linear-gradient(rgba(8, 4, 18, 0.65), rgba(8, 4, 18, 0.65)) padding-box,
-    linear-gradient(125deg, #7c3aed 0%, #a658ff 45%, #e066ff 78%, #9333ea 100%) border-box;
-  transition: filter 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: none;
+  /* Velocidad del hover. Sube este valor para ir más lento. */
+  --bois-verify-speed: 0.48s;
 }
 
-.bois-nav-contact:hover,
-.bois-nav-contact:focus-visible {
-  filter: brightness(1.08);
-  box-shadow: 0 0 20px rgba(166, 88, 255, 0.35);
+.bois-verify-button-surface {
+  position: absolute;
+  z-index: 0;
+  inset: 1px;
+  border-radius: 9px;
+  background: #ffffff;
+  pointer-events: none;
+}
+
+.bois-verify-button:hover,
+.bois-verify-button:focus-visible {
+  background: #141416;
   outline: none;
+}
+
+.bois-verify-button::before,
+.bois-verify-button::after {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  top: -16px;
+  left: -16px;
+  height: calc(100% + 32px);
+  background: #141416;
+  pointer-events: none;
+}
+
+.bois-verify-button::before {
+  width: calc(140% + 32px);
+  clip-path: polygon(75% 0%, 100% 50%, 75% 100%, 0% 100%, 0% 0%);
+  transform: translate3d(-100%, 0, 0);
+}
+
+.bois-verify-button:hover::before,
+.bois-verify-button:focus-visible::before {
+  transform: translate3d(0, 0, 0);
+  transition: transform var(--bois-verify-speed) cubic-bezier(0.7, 0, 0.2, 1);
+}
+
+.bois-verify-button::after {
+  width: calc(115% + 32px);
+  transform: translate3d(100%, 0, 0);
+  transition: transform var(--bois-verify-speed) cubic-bezier(0.7, 0, 0.2, 1);
+}
+
+.bois-verify-button:hover::after,
+.bois-verify-button:focus-visible::after {
+  transform: translate3d(0, 0, 0);
+  transition: transform 0.01s var(--bois-verify-speed) cubic-bezier(0.7, 0, 0.2, 1);
+}
+
+.bois-verify-button-label {
+  display: block;
+  position: relative;
+  z-index: 2;
+  overflow: hidden;
+  color: #141416;
+}
+
+.bois-verify-button:hover .bois-verify-button-label,
+.bois-verify-button:focus-visible .bois-verify-button-label {
+  color: #ffffff;
+  transition: color 0.05s linear calc(var(--bois-verify-speed) * 0.4);
+}
+
+.bois-verify-button-label > span {
+  display: block;
+}
+
+.bois-verify-button:hover .bois-verify-button-label > span,
+.bois-verify-button:focus-visible .bois-verify-button-label > span {
+  animation:
+    boisNavVerifyOut calc(var(--bois-verify-speed) * 0.35) forwards,
+    boisNavVerifyIn var(--bois-verify-speed) forwards calc(var(--bois-verify-speed) * 0.65);
+}
+
+@keyframes boisNavVerifyOut {
+  to {
+    transform: translate3d(105%, 0, 0);
+  }
+}
+
+@keyframes boisNavVerifyIn {
+  from {
+    transform: translate3d(-100%, 0, 0);
+  }
+
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bois-verify-button::before,
+  .bois-verify-button::after,
+  .bois-verify-button:hover .bois-verify-button-label > span,
+  .bois-verify-button:focus-visible .bois-verify-button-label > span {
+    animation: none;
+    transition: none;
+  }
 }
 
 .bois-nav-backdrop {
@@ -354,7 +454,7 @@ img.is-pending {
   outline: none;
 }
 
-.bois-nav-drawer-list .bois-nav-contact {
+.bois-nav-drawer-list .bois-verify-button {
   margin-top: 0.25rem;
   display: flex;
   align-self: stretch;
@@ -368,13 +468,12 @@ img.is-pending {
   text-align: center;
 }
 
-.bois-nav-drawer-list .bois-nav-contact:hover,
-.bois-nav-drawer-list .bois-nav-contact:focus-visible {
-  background:
-    linear-gradient(rgba(12, 6, 22, 0.92), rgba(12, 6, 22, 0.92)) padding-box,
-    linear-gradient(125deg, #8b5cf6 0%, #b366ff 45%, #f472b6 78%, #9333ea 100%) border-box;
-  filter: brightness(1.08);
-  box-shadow: 0 0 20px rgba(166, 88, 255, 0.35);
+.bois-nav-drawer-list .bois-verify-button:hover,
+.bois-nav-drawer-list .bois-verify-button:focus-visible {
+  background: #141416;
+  filter: none;
+  box-shadow: none;
+  outline: none;
 }
 
 @media (max-width: 768px) {
@@ -480,7 +579,7 @@ img.is-pending {
   padding: 2rem 1.75rem 1.6rem;
   border-radius: 18px;
   background: linear-gradient(180deg, #12081f 0%, #0a0612 100%);
-  border: 1px solid rgba(166, 88, 255, 0.25);
+  border: none;
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
   text-align: center;
   color: #f3f3f7;
@@ -511,30 +610,6 @@ img.is-pending {
     opacity: 0;
     transform: translateY(10px) scale(0.97);
   }
-}
-
-.bois-notify-close {
-  position: absolute;
-  top: 0.75rem;
-  right: 0.75rem;
-  width: 2.25rem;
-  height: 2.25rem;
-  border: none;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.06);
-  color: #e8d4ff;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.15s ease, color 0.15s ease;
-}
-
-.bois-notify-close:hover,
-.bois-notify-close:focus-visible {
-  background: rgba(166, 88, 255, 0.25);
-  color: #fff;
-  outline: none;
 }
 
 .bois-notify-icon {
@@ -593,7 +668,7 @@ img.is-pending {
 }
 
 .bois-notify-primary {
-  border: 1px solid #ffffff;
+  border: none;
   background: #ffffff;
   color: #08090f;
 }
@@ -601,20 +676,18 @@ img.is-pending {
 .bois-notify-primary:hover,
 .bois-notify-primary:focus-visible {
   background: #f5f5ff;
-  border-color: #f5f5ff;
   outline: none;
 }
 
 .bois-notify-secondary {
-  border: 1px solid rgba(255, 255, 255, 0.28);
+  border: none;
   background: transparent;
   color: #f3f3f7;
 }
 
 .bois-notify-secondary:hover,
 .bois-notify-secondary:focus-visible {
-  border-color: rgba(166, 88, 255, 0.7);
-  background: rgba(166, 88, 255, 0.15);
+  background: rgba(255, 255, 255, 0.08);
   outline: none;
 }
 
@@ -697,17 +770,8 @@ img.is-pending {
 }
 
 .bois-hero-primary-button {
-  background: #ffffff;
-  border-color: #ffffff;
-  color: #08090f !important;
-  padding-inline: 1.2rem;
-}
-
-.bois-hero-primary-button:hover,
-.bois-hero-primary-button:focus-visible {
-  background: #f5f5ff;
-  border-color: #f5f5ff;
-  color: #06070d !important;
+  padding: 0.7rem 1.35rem;
+  font-size: 1.05rem;
 }
 
 .bois-hero-icon-buttons {
@@ -1165,7 +1229,8 @@ img.is-pending {
   height: 42px;
   flex-shrink: 0;
   border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  border: none;
+  outline: none;
   background: #2a2a30;
   color: #f4f4f8;
   text-decoration: none;
@@ -1175,6 +1240,7 @@ img.is-pending {
 .tournament-card-map:focus-visible {
   color: #fff;
   background: #34343c;
+  outline: none;
 }
 
 .tournament-card-stats {
@@ -1280,21 +1346,21 @@ img.is-pending {
 }
 
 .tournament-card-cta {
-  display: block;
   width: 100%;
   padding: 0.75rem 1rem;
-  border-radius: 999px;
-  background: #fff;
-  color: #111114;
-  font-weight: 700;
-  text-align: center;
-  text-decoration: none;
 }
 
-.tournament-card-cta:hover,
-.tournament-card-cta:focus-visible {
-  background: #f3f3f6;
-  color: #111114;
+.tournament-card-cta .bois-verify-button-label > span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+}
+
+.tournament-card-cta-icon {
+  width: 1.05rem;
+  height: 1.05rem;
+  flex-shrink: 0;
 }
 
 @media (min-width: 769px) {
