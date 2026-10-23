@@ -10,6 +10,7 @@ const ORGANIZER_DISPLAY_MAP = new Map([
   ["bois.oficial@gmail.com", "BoisGang"],
   ["eduardoenriqueperezf@gmail.com", "SEDAH"],
   ["zoulsgaming1@gmail.com", "Zouls"],
+  ["ghostofheavengoh@gmail.com", "GOH"],
 ]);
 
 const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
